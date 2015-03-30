@@ -1,0 +1,38 @@
+<div id="ajaxdata">
+    <ul class="nav nav-pills nav-justified">
+        <li class="active"><a href="#">Add Client</a>
+        </li>
+        <li><a href="#">Change Password</a>
+        </li>
+        <li><a class="logout" href="#">Logout</a>
+        </li>
+    </ul>
+
+    <div id="adminBox">
+        <h1>Add Client</h1>
+        <form role="form" id="newClient">
+            <div class="form-group">
+                <label>Client Name</label>
+                <input type="text" class="form-control" id="clientNamem" name="clientNamem" placeholder="Item Number">
+            </div>
+            <div class="form-group">
+                <label>Client Contract Number</label>
+                <input type="text" class="form-control" id="clientContractm" name="clientContractm" placeholder="Item Number">
+            </div>
+            <div class="form-group">
+                <label>Client Workplace</label>
+                <input type="text" class="form-control" id="clientWorkm" name="clientWorkm" placeholder="Item Number">
+            </div>
+            <div class="form-group">
+                <label for="obsImages">Client Logo</label>
+                <input type="hidden" value="0" class="obsImages" name="obsImages" />
+                <div>
+                    <button type="button" class="btn btn-info addmedia"><span class="glyphicon glyphicon-camera"></span> Take Photo</button>
+                    <button type="button" class="btn btn-warning  addmedialib"><span class="glyphicon glyphicon-picture"></span> Photo Library</button>
+                        
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success pull-right">Add Client</button>
+        </form>
+    </div>
+</div>

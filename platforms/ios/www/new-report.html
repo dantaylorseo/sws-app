@@ -1,0 +1,252 @@
+<div id="ajaxdata">
+    <form role="form" class="form-horizontal" id="reportform">
+        <div class="form-group">
+            <label for="clientID" class="col-sm-2 control-label">Client Name</label>
+            <div class="col-sm-4">
+                <select class="form-control" id="clientID" name="reportClient">
+                    <option disabled selected>Select Client</option>
+                </select>
+            </div>
+            <label for="exampleInputPassword1" class="col-sm-2 control-label">Contract Number</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="clientContract" name="reportContract" placeholder="Contract Number">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1" class="col-sm-2 control-label">Workplace</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="clientWork" name="reportWork" placeholder="Workplace">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1" class="col-sm-2 control-label">Date</label>
+            <div class="col-sm-4">
+                    <input type="text" name="reportDate" class="form-control datepicker">
+            </div>
+            <label for="exampleInputPassword1" class="col-sm-2 control-label">Arrival Time</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="time" name="reportTime" placeholder="Arrival Time">
+            </div>
+        </div>
+        <div class="well well-lg clearfix tickboxes">
+            <div class="inner">
+                <div class="checkbox">
+                    <label>
+                        <span class="totalBox totalBox1">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Access &amp; Egress" rel="1">Add</button>1. Access &amp; Egress
+                        <input type="hidden" id="inlineCheckbox1" name="inlineCheckbox[1]" value="0">
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox2" name="inlineCheckbox[2]" value="0"><span class="totalBox totalBox2">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Site Security" rel="2">Add</button>2. Site Security
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox3" name="inlineCheckbox[3]" value="0"><span class="totalBox totalBox3">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Fire Risk Assessment" rel="3">Add</button>3. Fire Risk Assessment
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox4" name="inlineCheckbox[4]" value="0"><span class="totalBox totalBox4">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Signs &amp; Notices" rel="4">Add</button>4. Signs &amp; Notices
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox5" name="inlineCheckbox[5]" value="0"><span class="totalBox totalBox5">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Risk Ass. &amp; Method St" rel="5">Add</button>5. Risk Ass. &amp; Method St
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox6" name="inlineCheckbox[6]" value="0"><span class="totalBox totalBox6">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Documents" rel="6">Add</button>6. Documents
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox7" name="inlineCheckbox[7]" value="0"><span class="totalBox totalBox7">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Training &amp; Certification" rel="7">Add</button>7. Training &amp; Certification
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox8" name="inlineCheckbox[8]" value="0"><span class="totalBox totalBox8">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="First Aid" rel="8">Add</button>8. First Aid
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox9" name="inlineCheckbox[9]" value="0"><span class="totalBox totalBox9">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Excavations &amp; G/Works" rel="9">Add</button>9. Excavations &amp; G/Works
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox10" name="inlineCheckbox[10]" value="0"><span class="totalBox totalBox10">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Traffic Management" rel="10">Add</button>10. Traffic Management
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox11" name="inlineCheckbox[11]" value="0"><span class="totalBox totalBox11">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Weather/Light" rel="11">Add</button>11. Weather/Light
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox12" name="inlineCheckbox[12]" value="0"><span class="totalBox totalBox12">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Work Equipment" rel="12">Add</button>12. Work Equipment
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox13" name="inlineCheckbox[13]" value="0"><span class="totalBox totalBox13">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Lifting Operations" rel="13">Add</button>13. Lifting Operations
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox14" name="inlineCheckbox[14]" value="0"><span class="totalBox totalBox14">0</span> 
+                        <button disabled type="button" class="btn btn-warning btn-xs addObsButton" rel="14">Add</button>14.
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox15" name="inlineCheckbox[15]" value="0"><span class="totalBox totalBox15">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Work at Height" rel="15">Add</button>15. Work at Height
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox16" name="inlineCheckbox[16]" value="0"><span class="totalBox totalBox16">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Scaffolding" rel="16">Add</button>16. Scaffolding
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox17" name="inlineCheckbox[17]" value="0"><span class="totalBox totalBox17">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Confined Spaces" rel="17">Add</button>17. Confined Spaces
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox18" name="inlineCheckbox[18]" value="0"><span class="totalBox totalBox18">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Demolitions" rel="18">Add</button>18. Demolitions
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox19" name="inlineCheckbox[19]" value="0"><span class="totalBox totalBox19">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="HFL/LPG &amp; Hot Work" rel="19">Add</button>19. HFL/LPG &amp; Hot Work
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox20" name="inlineCheckbox[20]" value="0"><span class="totalBox totalBox20">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Fire Safety" rel="20">Add</button>20. Fire Safety
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox21" name="inlineCheckbox[21]" value="0"><span class="totalBox totalBox21">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Electricity" rel="21">Add</button>21. Electricity
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox22" name="inlineCheckbox[22]" value="0"><span class="totalBox totalBox22">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Noise &amp; Vibration" rel="22">Add</button>22. Noise &amp; Vibration
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox23" name="inlineCheckbox[23]" value="0"><span class="totalBox totalBox23">0</span> 
+                        <button type="button" class="btn btn-warning btn-xs addObsButton" disabled rel="23">Add</button>23.
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox24" name="inlineCheckbox[24]" value="0"><span class="totalBox totalBox24">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Housekeeping/Welfare" rel="24">Add</button>24. Housekeeping/Welfare
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox25" name="inlineCheckbox[25]" value="0"><span class="totalBox totalBox25">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="COSHH" rel="25">Add</button>25. COSHH
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox26" name="inlineCheckbox[26]" value="0"><span class="totalBox totalBox26">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Environment" rel="26">Add</button>26. Environment
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox27" name="inlineCheckbox[27]" value="0"><span class="totalBox totalBox27">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Emerg. Procedures" rel="27">Add</button>27. Emerg. Procedures
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox28" name="inlineCheckbox[28]" value="0"><span class="totalBox totalBox28">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="PPE" rel="28">Add</button>28. PPE
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox29" name="inlineCheckbox[29]" value="0"><span class="totalBox totalBox29">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Manual Handling" rel="29">Add</button>29. Manual Handling
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox30" name="inlineCheckbox[30]" value="0"><span class="totalBox totalBox30">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Accidents/Near Misses" rel="30">Add</button>30. Accidents/Near Misses
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox31" name="inlineCheckbox[31]" value="0"><span class="totalBox totalBox31">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="Verbal/Written Warning" rel="31">Add</button>31. Verbal/Written Warning
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox32" name="inlineCheckbox[32]" value="0"><span class="totalBox totalBox32">0</span> 
+                        <button type="button" class="btn btn-warning btn-xs addObsButton" disabled rel="32">Add</button>32.
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="hidden" id="inlineCheckbox33" name="inlineCheckbox[33]" value="0"><span class="totalBox totalBox33">0</span> 
+                        <button type="button" class="btn btn-success btn-xs addObsButton" data-title="General" rel="33">Add</button>33. General
+                    </label>
+                </div>
+
+            </div>
+        </div>
+
+
+        <table role="table" class="table table-bordered swstable">
+            <tr>
+                <th class="col-sm-1 col-md-1">Item</th>
+                <th class="col-sm-7 col-md-7">Observations & Reccomendations</th>
+                <th class="col-sm-2 col-md-2">Prority Category</th>
+                <th class="col-sm-1 col-md-1"><span class="glyphicon glyphicon-camera"></span></th>
+                <th class="col-sm-1 col-md-1"><span class="glyphicon glyphicon-pencil"></span></th>
+                
+            </tr>
+            <tr class="nodata">
+                <td colspan="5">No observations yet</td>
+            </tr>
+        </table>
+        <button type="submit" class="btn btn-success">Submit &amp; Sign Form</button>
+    </form>
+</div>
