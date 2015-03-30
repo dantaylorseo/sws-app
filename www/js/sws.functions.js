@@ -50,7 +50,7 @@ function successCB() {
 
 function populateDB(tx) {
     // Drop tables - remove in production 
-    var cleardb = 0;
+    var cleardb = 1;
     if(cleardb == 1) {
         tx.executeSql('DROP TABLE IF EXISTS client');
         tx.executeSql('DROP TABLE IF EXISTS obs');
