@@ -62,10 +62,10 @@ function populateDB(tx) {
     tx.executeSql('CREATE TABLE IF NOT EXISTS client (clientID TEXT PRIMARY KEY, clientName TEXT, clientContract TEXT, clientWork TEXT, clientLogo TEXT, clientActive INTEGER DEFAULT "1")');
     tx.executeSql('CREATE TABLE IF NOT EXISTS obs (obsID TEXT PRIMARY KEY, obsReport TEXT, obsItem INTEGER, obsObs TEXT, obsPriority TEXT, obsMedia TEXT)');
     tx.executeSql('CREATE TABLE IF NOT EXISTS report (reportID TEXT PRIMARY KEY, reportClient TEXT, reportWork TEXT, reportContract TEXT, reportDate TEXT, reportTime TEXT, reportTick TEXT, reportUser TEXT, reportClientSig TEXT, reportUserSig TEXT)');
-    tx.executeSql('CREATE TABLE IF NOT EXISTS user (userID TEXT PRIMARY KEY, userEmail TEXT, userPass TEXT, userActive INTEGER DEFAULT "1", userType INTEGER DEFAULT "0")');
+    tx.executeSql('CREATE TABLE IF NOT EXISTS user (userID TEXT PRIMARY KEY, userEmail TEXT, userPass TEXT, userActive INTEGER DEFAULT "1", userType INTEGER DEFAULT "0", userUpdated TEXT DEFAUL CURRENT_TIMESTAMP)');
     userID = generateUUID();
-    tx.executeSql('DELETE FROM user WHERE userEmail="dan@tailored.im")');
     tx.executeSql('INSERT INTO user (userID, userEmail, userPass) VALUES ("'+userID+'", "dan@tailored.im", "biscuit")');
+	tx.executeSql('CREATE TRIGGER [UpdateLastTime] AFTER UPDATE ON user FOR EACH ROW WHEN NEW.userUpdated < OLD.userUpdated BEGIN UPDATE user SET userUpdated=CURRENT_TIMESTAMP WHERE userID=OLD.userID; END;');
 }
 
 function renderPage() {
