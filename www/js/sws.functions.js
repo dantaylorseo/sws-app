@@ -15,17 +15,20 @@ var app = {
                 console.log(isAvailable ? 'Service is available' : 'Service NOT available');
             }
         );
+		var online = 0;
         renderPage();
     },
     onOnline: function() {
         console.log("Doing sync...");
         $("#offline").slideUp(1000);
         $("#online").slideDown(1000);
+		online = 1;
     },
     onOffline: function() {
         console.log("Working offline");
         $("#online").slideUp(1000);
         $("#offline").slideDown(1000);
+		online = 1;
     }
 };
 
@@ -98,27 +101,32 @@ function renderPage() {
         var user = $('#usernamelogin').val();
         var pass = $('#passwordlogin').val();
         
-        db.transaction(function(tx) 
-        {
-            tx.executeSql("SELECT userID, userEmail, userPass FROM user WHERE userEmail='" + user.trim() + "'", [], function(tx, rs) 
-            {
-                if (rs.rows.item(0).userPass == pass.trim()) {
-                    window.localStorage.userID = rs.rows.item(0).userID;
-                    $('.login-modal').modal('hide');
-                } else 
-                {
-                    console.log("error " + rs.rows.item(0).userPass + " " + pass);
-                }
-            }, function() { alert('Login incorrect'); } );
-        }, function() 
-        { 
-            navigator.notification.alert(
-                '\nYour login has failed\n\nPlease check your email address and password and try again.',
-                function() {},
-                'Login failed',
-                'Retry'
-            );
-        });
+		if( online === 1) {
+			$.get('http://sws.tailoreddev.co.uk/app/sync_user.php', 'user='+user, function( data ) {
+				console.log(data);
+			}, 'json' );
+		}
+		
+        db.transaction(
+			function(tx) {
+				tx.executeSql("SELECT userID, userEmail, userPass FROM user WHERE userEmail='" + user.trim() + "'", [], function(tx, rs) 
+				{
+					if (rs.rows.item(0).userPass == pass.trim()) {
+						window.localStorage.userID = rs.rows.item(0).userID;
+						$('.login-modal').modal('hide');
+					} else {
+						console.log("error " + rs.rows.item(0).userPass + " " + pass);
+					}
+				}, errorCB );
+        	}, function() { 
+				navigator.notification.alert(
+					'\nYour login has failed\n\nPlease check your email address and password and try again.',
+					function() {},
+					'Login failed',
+					'Retry'
+				);
+        	}
+		);
     })
     .on("click", ".innerlink", function(e) {
         e.preventDefault();
