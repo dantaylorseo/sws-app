@@ -8,13 +8,13 @@ var app = {
         document.addEventListener('offline', this.onOffline, false);
     },
     onDeviceReady: function() {
-        console.log(navigator.connection.type);
+        //console.log(navigator.connection.type);
         FastClick.attach(document.body);
-        cordova.plugins.printer.isAvailable(
+        /*cordova.plugins.printer.isAvailable(
             function (isAvailable) {
                 console.log(isAvailable ? 'Service is available' : 'Service NOT available');
             }
-        );
+        );*/
 		var online = 0;
 		var obsArray = [];
         renderPage();
@@ -25,6 +25,7 @@ var app = {
         $("#online").slideDown(1000);
         
 		online = 1;
+		console.log( online );
     },
     onOffline: function() {
         console.log("Working offline");
@@ -53,11 +54,6 @@ function successCB() {
     console.log("Databases created!");
 }
 
-function get_users() {
-    $.get( 'http://sws.tailoreddev.co.uk/ajax/get-users.php', function( data ) {
-        console.log( data );
-    });
-}
 
 function populateDB(tx) {
     // Drop tables - remove in production 
@@ -76,11 +72,9 @@ function populateDB(tx) {
     
     tx.executeSql('CREATE TABLE IF NOT EXISTS report (reportID TEXT PRIMARY KEY, reportClient TEXT, reportWork TEXT, reportContract TEXT, reportDate TEXT, reportTime TEXT, reportTick TEXT, reportUser TEXT, reportClientSig TEXT, reportUserSig TEXT, reportCreated TEXT DEFAULT CURRENT_TIMESTAMP, reportUpdated TEXT DEFAULT CURRENT_TIMESTAMP, obsSync INTEGER DEFAULT 0)');
     
-    tx.executeSql('CREATE TABLE IF NOT EXISTS user (userID TEXT PRIMARY KEY, userEmail TEXT, userPass TEXT, userActive INTEGER DEFAULT "1", userType INTEGER DEFAULT "0", userCreated TEXT DEFAULT CURRENT_TIMESTAMP, userUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
+    tx.executeSql('CREATE TABLE IF NOT EXISTS user (userID TEXT PRIMARY KEY, userName TEXT, userEmail TEXT, userPass TEXT, userActive INTEGER DEFAULT "1", userType INTEGER DEFAULT "0", userCreated TEXT DEFAULT CURRENT_TIMESTAMP, userUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
     
     userID = generateUUID();
-    
-    tx.executeSql('INSERT INTO user (userID, userEmail, userPass) VALUES ("'+userID+'", "dan@tailored.im", "biscuit")');
     
     tx.executeSql('CREATE TRIGGER userUpdate AFTER UPDATE OF userID, userEmail, userPass, userActive, userType ON user FOR EACH ROW BEGIN UPDATE user SET userUpdated = datetime() WHERE userID = old.userID; END;');
     
@@ -92,8 +86,26 @@ function populateDB(tx) {
     
     
 }
-
+function get_users() {
+	
+	// TODO: Add a check on last updated column
+	
+	$.get( 'http://sws.tailoreddev.co.uk/ajax/get-users.php', function( data ) {
+		var db = window.openDatabase("sws_db", "1.0", "SWS Database", 200000);
+		$.each( data, function ( i, item ) {
+			
+			var query = 'INSERT OR UPDATE INTO user ( userID, userName, userEmail, userPass, userActive, userType, userCreated ) VALUES ( "'+data[i].userID+'", "'+data[i].userName+'", "'+data[i].userEmail+'", "'+data[i].userPass+'", "'+data[i].userActive+'", "'+data[i].userType+'", "'+data[i].userCreated+'" )';
+			console.log( query );
+			db.transaction( 
+				function( tx ) {
+					tx.executeSql( query ); 
+				}
+			);
+		});
+	}, 'json' );
+}
 function renderPage() {
+	console.log( 'Online: '+online );
     if(window.localStorage.userID != undefined) {
         
     } else {
@@ -109,9 +121,11 @@ function renderPage() {
 	var obsArray = [];
     $(document)
 	.ready( function(e) {
-		if( online == 1 ) {
+		
+
+		//if( online == 1 ) {
             get_users();
-        }
+        //}
 	})
     .on("click", ".logout", function(event) {
         event.preventDefault();
