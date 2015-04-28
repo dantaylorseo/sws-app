@@ -57,7 +57,7 @@ function successCB() {
 
 function populateDB(tx) {
     // Drop tables - remove in production 
-    var cleardb = 0;
+    var cleardb = 1;
     if(cleardb == 1) {
         tx.executeSql('DROP TABLE IF EXISTS client');
         tx.executeSql('DROP TABLE IF EXISTS obs');
@@ -94,7 +94,7 @@ function get_users() {
 		var db = window.openDatabase("sws_db", "1.0", "SWS Database", 200000);
 		$.each( data, function ( i, item ) {
 			
-			var query = 'INSERT OR UPDATE INTO user ( userID, userName, userEmail, userPass, userActive, userType, userCreated ) VALUES ( "'+data[i].userID+'", "'+data[i].userName+'", "'+data[i].userEmail+'", "'+data[i].userPass+'", "'+data[i].userActive+'", "'+data[i].userType+'", "'+data[i].userCreated+'" )';
+			var query = 'INSERT OR REPLACE INTO user ( userID, userName, userEmail, userPass, userActive, userType, userCreated ) VALUES ( "'+data[i].userID+'", "'+data[i].userName+'", "'+data[i].userEmail+'", "'+data[i].userPass+'", "'+data[i].userActive+'", "'+data[i].userType+'", "'+data[i].userCreated+'" )';
 			console.log( query );
 			db.transaction( 
 				function( tx ) {
