@@ -8,14 +8,15 @@ var app = {
         document.addEventListener('offline', this.onOffline, false);
     },
     onDeviceReady: function() {
-        console.log(navigator.connection.type);
+        //console.log(navigator.connection.type);
         FastClick.attach(document.body);
-        cordova.plugins.printer.isAvailable(
+        /*cordova.plugins.printer.isAvailable(
             function (isAvailable) {
                 console.log(isAvailable ? 'Service is available' : 'Service NOT available');
             }
-        );
+        );*/
 		var online = 0;
+		var obsArray = [];
         renderPage();
     },
     onOnline: function() {
@@ -95,11 +96,14 @@ function renderPage() {
           show: true
         });
     }
-    
     var db = window.openDatabase("sws_db", "1.0", "SWS Database", 200000);
     db.transaction(populateDB, errorCB, successCB);
-
+	var loadtest = 0;
+	var obsArray = [];
     $(document)
+	.ready( function(e) {
+		
+	})
     .on("click", ".logout", function(event) {
         event.preventDefault();
         localStorage.clear();
@@ -149,6 +153,7 @@ function renderPage() {
         $(this).addClass('active');
         var title = $(this).attr('title');
         $("#ajaxdata").remove();
+		
         $("#main").load(link, function() {
             $('.navbar-fixed-top .navbar-brand').html(title);
             
@@ -168,8 +173,17 @@ function renderPage() {
                     }, errorCB);
                 
             } else if(link == 'new-report.html' || link == 'admin.html') {
-                
-                reportPage();
+				console.log( loadtest );
+				
+				arrayid = generateUUID();
+				$("#newObs .obsID").val(arrayid);
+				var obsID = $("#newObs .obsID").val();
+                if( loadtest == 0 ) {
+					reportPage();
+					loadtest++;
+				} else {
+					obsArray[obsID] = [];
+				}
             }
             
         });
@@ -225,9 +239,11 @@ function reportDetail(reportID) {
 }
 
 function reportPage() {
-    
     var db = window.openDatabase("sws_db", "1.0", "SWS Database", 200000);
-    /*var d = new Date();
+	var obsArray = [];
+	var obsID = $("#newObs .obsID").val();
+	obsArray[obsID] = [];
+    var d = new Date();
     var h = d.getHours();
     var m = d.getMinutes() < 10 ? '0' : '';
     m += d.getMinutes();
@@ -251,16 +267,15 @@ function reportPage() {
 
     $('#time').val(h + ':' + m);
     var sigCapture = null;
-    */
-    var obsArray = [];
-    console.log(obsArray);
-    /*$(document).ready(function(e) {
+    
+    
+    $(document).ready(function(e) {
 
         sigCapture = new SignatureCapture("signature");
     });
-    */
+    
         $(document)
-      /*  
+        
     .on("click", ".clearsig", function(event) {
         event.preventDefault();
         sigCapture = new SignatureCapture("signature");
@@ -298,7 +313,7 @@ function reportPage() {
         );
         $('.sigimg').attr('src', 'data:image/png; base64,' + sigCapture.toString());
     })
-    */
+    
         .on("click", '.subreport', function(e) {
             e.preventDefault();
             $(this).attr('disabled','disabled');
@@ -327,7 +342,9 @@ function reportPage() {
                     tx.executeSql(query, [reportID, result.reportClient, result.reportWork, result.reportContract, result.reportDate, result.reportTime, ticked, window.localStorage.userID], function(tx, rs) {
                         
                         var obsQuery = "INSERT INTO obs (obsReport, obsID, obsItem, obsObs, obsPriority) VALUES (?,?,?,?,?)";
-                        $.each(obsArray, function() {
+						var obsID = $('.obsID').val();
+						console.log(obsArray[obsID]);
+                        $.each(obsArray[obsID], function() {
                             
                             var obsID = generateUUID();
                             tx.executeSql(obsQuery, [reportID, obsID, this.obsItem, this.obsObs, this.obsPriority], function(tx, rs) {console.log('inserted obs:'+obsID);}, errorCB);
@@ -343,7 +360,6 @@ function reportPage() {
             $('.subreport').removeAttr('disabled');
 
         })
-        /*
         .on("submit", "#newClient", function(e) {
             e.preventDefault();
             $("#newClient input[type=submit]").attr('disabled', 'disabled');
@@ -385,7 +401,7 @@ function reportPage() {
                     }, errorCB);
                 }, errorCB);
         })
-        */
+        
         .on("click", ".tickboxes .addObsButton", function(e) {
             e.preventDefault();
             var str = $(this).attr('rel');
@@ -397,6 +413,7 @@ function reportPage() {
             $("#newObs .obsImages").val('0');
             $('.media div').remove();
             $('#newObs .obsPriority').val('null');
+			
             $(".newobs").modal("show");
             $('.addobssub').removeAttr('disabled');
         })
@@ -412,7 +429,6 @@ function reportPage() {
             $.each($(this).serializeArray(), function() {
                 result[this.name] = this.value;
             });
-            console.log(result);
             if (typeof result.obsPriority === 'undefined') {
                 //alert("Please select a priority");
                 error++;
@@ -422,7 +438,12 @@ function reportPage() {
                 error++;
             } 
             if( error == 0 ) {
-                obsArray.push(result);
+				var obsID = result.obsID;
+				if( typeof obsArray[obsID] === 'undefined' ) {
+					obsArray[obsID] = [];
+				}
+                obsArray[obsID].push(result);
+				
                 var priorityClass = result.obsPriority.split(" ");
                 priorityClass = 'priority_'+priorityClass[0];
                 var output = '<tr><td>' + result.obsItem + '</td><td>' + result.obsObs + '</td><td class="'+priorityClass+'">' + result.obsPriority + '</td><td>' + result.obsImages + '</td><td><button class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-pencil"></span></button> <button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button></td></tr>';
@@ -439,8 +460,9 @@ function reportPage() {
                 console.log('end');
             }
             $('.addobssub').removeAttr('disabled');
+			console.log(obsArray);
         })
-        /*
+        
         .on("click", ".addmedia", function(e) {
             e.preventDefault();
             navigator.camera.getPicture(onSuccess, onFail, {
@@ -491,5 +513,5 @@ function reportPage() {
     function onFail(message) {
         alert('Failed because: ' + message);
     }
-    */
+    
 }
