@@ -54,11 +54,11 @@
                         </div>
                         <div class="form-group">
                             <label for="obsObs">Observation/Reccomendation</label>
-                            <textarea class="form-control" id="obsObs" name="obsObs" placeholder="Observation/Reccomendation" rows="5"></textarea>
+                            <textarea class="form-control needsclick" id="obsObs" name="obsObs" placeholder="Observation/Reccomendation" rows="5"></textarea>
                         </div>
                         <div class="form-group">
                             <label for="obsPriority">Priority</label>
-                            <select class="form-control" name="obsPriority" class="obsPriority">
+                            <select class="form-control needsclick" name="obsPriority" class="obsPriority">
                               <option value="null">Priority</option>
                               <option value="A - Immediate">A - Immediate</option>
                               <option value="B - 1 Day">B - 1 Day</option>
@@ -76,61 +76,13 @@
                                 <button type="button" class="btn btn-info addmedia"><span class="glyphicon glyphicon-camera"></span> Take Photo</button> <button type="button" class="btn btn-warning  addmedialib"><span class="glyphicon glyphicon-picture"></span> Photo Library</button>
                             
                         </div>
-                        <div class="modal-footer">
+                        
+                </div>
+                    <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary addobssub">Add Observation</button>
+                            <button type="button" class="btn btn-primary addobssub needsclick">Add Observation</button>
                         </div>
                     </form>
-                </div>
-            </div>
-            <!-- /.modal-content -->
-        </div>
-    </div>
-    <div class="modal newobs2 fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span>
-                    </button>
-                    <h4 class="modal-title" id="myLargeModalLabel">Add New Onservation</h4>
-                </div>
-                <div class="modal-body">
-                    <form role="form" id="newObs2">
-                        <div class="form-group">
-                            <label for="obsItem">Item Number</label>
-                            <div class="col-md-1">
-                                <input type="text" class="form-control" id="obsItem" readonly name="obsItem" placeholder="Item Number">
-                            </div>
-                            <div class="col-md-11">
-                                <input type="text" class="form-control" id="obsName" readonly name="obsName" placeholder="Item Number">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="obsPriority">Priority</label>
-                            <select class="form-control" name="obsPriority">
-                              <option disabled selected>Priority</option>
-                              <option>A - Immediate</option>
-                              <option>B - 1 Day</option>
-                              <option>C - 1 Week</option>
-                              <option>D - 1 Month</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-
-                            <label for="obsImages">Media</label>
-<input type="hidden" value="0" class="obsImages" name="obsImages" />
-                            <div class="row media">
-                                
-                            </div>
-                                <button type="button" class="btn btn-info addmedia"><span class="glyphicon glyphicon-camera"></span> Take Photo</button> <button type="button" class="btn btn-warning  addmedialib"><span class="glyphicon glyphicon-picture"></span> Photo Library</button>
-                            
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary addobssub">Add Observation</button>
-                        </div>
-                    </form>
-                </div>
             </div>
             <!-- /.modal-content -->
         </div>
@@ -151,7 +103,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default clearsig">Clear</button>
-                        <button type="submit" class="btn btn-primary addsig">Add Signature</button>
+                        <button type="submit" class="btn btn-primary addsig needsclick">Add Signature</button>
                     </div>
                 </form>
             </div>
@@ -173,7 +125,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default clearsig" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary addsig">Add Signature</button>
+                        <button type="submit" class="btn btn-primary addsig needsclick">Add Signature</button>
                     </div>
                 </form>
             </div>

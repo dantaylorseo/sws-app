@@ -53,7 +53,7 @@ function successCB() {
 
 function populateDB(tx) {
     // Drop tables - remove in production 
-    var cleardb = 1;
+    var cleardb = 0;
     if(cleardb == 1) {
         tx.executeSql('DROP TABLE IF EXISTS client');
         tx.executeSql('DROP TABLE IF EXISTS obs');
@@ -62,13 +62,27 @@ function populateDB(tx) {
     }
 
     // Create tables
-    tx.executeSql('CREATE TABLE IF NOT EXISTS client (clientID TEXT PRIMARY KEY, clientName TEXT, clientContract TEXT, clientWork TEXT, clientLogo TEXT, clientActive INTEGER DEFAULT "1")');
-    tx.executeSql('CREATE TABLE IF NOT EXISTS obs (obsID TEXT PRIMARY KEY, obsReport TEXT, obsItem INTEGER, obsObs TEXT, obsPriority TEXT, obsMedia TEXT)');
-    tx.executeSql('CREATE TABLE IF NOT EXISTS report (reportID TEXT PRIMARY KEY, reportClient TEXT, reportWork TEXT, reportContract TEXT, reportDate TEXT, reportTime TEXT, reportTick TEXT, reportUser TEXT, reportClientSig TEXT, reportUserSig TEXT)');
-    tx.executeSql('CREATE TABLE IF NOT EXISTS user (userID TEXT PRIMARY KEY, userEmail TEXT, userPass TEXT, userActive INTEGER DEFAULT "1", userType INTEGER DEFAULT "0", userUpdated TEXT DEFAUL CURRENT_TIMESTAMP)');
+    tx.executeSql('CREATE TABLE IF NOT EXISTS client (clientID TEXT PRIMARY KEY, clientName TEXT, clientContract TEXT, clientWork TEXT, clientLogo TEXT, clientActive INTEGER DEFAULT "1", clientCreated TEXT DEFAULT CURRENT_TIMESTAMP, clientUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
+    
+    tx.executeSql('CREATE TABLE IF NOT EXISTS obs (obsID TEXT PRIMARY KEY, obsReport TEXT, obsItem INTEGER, obsObs TEXT, obsPriority TEXT, obsMedia TEXT, obsCreated TEXT DEFAULT CURRENT_TIMESTAMP, obsUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
+    
+    tx.executeSql('CREATE TABLE IF NOT EXISTS report (reportID TEXT PRIMARY KEY, reportClient TEXT, reportWork TEXT, reportContract TEXT, reportDate TEXT, reportTime TEXT, reportTick TEXT, reportUser TEXT, reportClientSig TEXT, reportUserSig TEXT, reportCreated TEXT DEFAULT CURRENT_TIMESTAMP, reportUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
+    
+    tx.executeSql('CREATE TABLE IF NOT EXISTS user (userID TEXT PRIMARY KEY, userEmail TEXT, userPass TEXT, userActive INTEGER DEFAULT "1", userType INTEGER DEFAULT "0", userCreated TEXT DEFAULT CURRENT_TIMESTAMP, userUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
+    
     userID = generateUUID();
+    
     tx.executeSql('INSERT INTO user (userID, userEmail, userPass) VALUES ("'+userID+'", "dan@tailored.im", "biscuit")');
-	tx.executeSql('CREATE TRIGGER [UpdateLastTime] AFTER UPDATE ON user FOR EACH ROW WHEN NEW.userUpdated < OLD.userUpdated BEGIN UPDATE user SET userUpdated=CURRENT_TIMESTAMP WHERE userID=OLD.userID; END;');
+    
+    tx.executeSql('CREATE TRIGGER userUpdate AFTER UPDATE OF userID, userEmail, userPass, userActive, userType ON user FOR EACH ROW BEGIN UPDATE user SET userUpdated = CURRENT_TIMESTAMP WHERE userID = old.userID; END;');
+    
+    tx.executeSql('CREATE TRIGGER clientUpdate AFTER UPDATE OF clientID, clientName, clientContract, clientWork, clientLogo, clientActive ON client FOR EACH ROW BEGIN UPDATE client SET clientUpdated=CURRENT_TIMESTAMP WHERE clientID=OLD.clientID; END;');
+    
+    tx.executeSql('CREATE TRIGGER obsUpdate AFTER UPDATE OF obsID, obsReport, obsItem, obsObs, obsPriority, obsMedia ON obs FOR EACH ROW BEGIN UPDATE obs SET obsUpdated=CURRENT_TIMESTAMP WHERE obsID=OLD.obsID; END;');
+    
+    tx.executeSql('CREATE TRIGGER reportUpdate AFTER UPDATE OF reportID, reportClient, reportWork, reportContract, reportDate, reportTime, reportTick, reportUser, reportClientSig, reportUserSig ON report FOR EACH ROW BEGIN UPDATE report SET reportUpdated=CURRENT_TIMESTAMP WHERE reportID=OLD.reportID; END;');
+    
+    
 }
 
 function renderPage() {
@@ -134,7 +148,8 @@ function renderPage() {
         $('.innerlink').removeClass('active');
         $(this).addClass('active');
         var title = $(this).attr('title');
-        $("#main").load(link + " #ajaxdata", function() {
+        $("#ajaxdata").remove();
+        $("#main").load(link, function() {
             $('.navbar-fixed-top .navbar-brand').html(title);
             
             if(link == 'reports.html') {
@@ -155,19 +170,6 @@ function renderPage() {
             } else if(link == 'new-report.html' || link == 'admin.html') {
                 
                 reportPage();
-                var clientQ = "SELECT * FROM client ORDER BY clientName ASC";
-                db.transaction(
-                    function(tx) {
-                        console.log('in');
-                        var output = '';
-                        tx.executeSql(clientQ, [], function(tx, rs) {
-                            for (var i = 0; i < rs.rows.length; i++) {
-                                output += '<option value="' + rs.rows.item(i).clientID + '">' + rs.rows.item(i).clientName + ' (' + rs.rows.item(i).clientID + ')</option>';
-                            }
-                            $("#clientID").html(output);
-                        }, errorCB);
-                    }, errorCB);
-                
             }
             
         });
@@ -223,8 +225,9 @@ function reportDetail(reportID) {
 }
 
 function reportPage() {
+    
     var db = window.openDatabase("sws_db", "1.0", "SWS Database", 200000);
-    var d = new Date();
+    /*var d = new Date();
     var h = d.getHours();
     var m = d.getMinutes() < 10 ? '0' : '';
     m += d.getMinutes();
@@ -248,32 +251,21 @@ function reportPage() {
 
     $('#time').val(h + ':' + m);
     var sigCapture = null;
+    */
     var obsArray = [];
-    $(document).ready(function(e) {
+    console.log(obsArray);
+    /*$(document).ready(function(e) {
 
         sigCapture = new SignatureCapture("signature");
     });
+    */
         $(document)
-        .on("click", ".addrow", function(event) {
-            event.preventDefault();
-            var row = '<tr><td><input type="text" class="form-control" name="item[]" placeholder="Item"></td><td><textarea class="form-control" rows="1" name="obs[]" placeholder="Observations &amp; Reccomendations"></textarea></td><td><select name="priority[]" class="form-control"><option disabled selected>Priority</option><option>A</option><option>B</option><option>C</option><option>C</option></select></td></tr>';
-            $('.swstable').append(row);
-        })
-
+      /*  
     .on("click", ".clearsig", function(event) {
         event.preventDefault();
         sigCapture = new SignatureCapture("signature");
     })
-        .on("focus", ".swstable textarea", function(event) {
-            event.preventDefault();
-            $(this).attr('rows', '5');
-        })
-
-    .on("blur", ".swstable textarea", function(event) {
-        event.preventDefault();
-        $(this).attr('rows', '1');
-    })
-
+        
     .on("click", ".printform", function(event) {
         event.preventDefault();
         var page = $("#ajaxdata").html();
@@ -306,6 +298,12 @@ function reportPage() {
         );
         $('.sigimg').attr('src', 'data:image/png; base64,' + sigCapture.toString());
     })
+    */
+        .on("click", '.subreport', function(e) {
+            e.preventDefault();
+            $(this).attr('disabled','disabled');
+            $('#reportform').submit();
+        })
         .on("submit", "#reportform", function(event) {
             event.preventDefault();
 
@@ -332,31 +330,20 @@ function reportPage() {
                         $.each(obsArray, function() {
                             
                             var obsID = generateUUID();
-                            tx.executeSql(obsQuery, [reportID, obsID, this.obsItem, this.obsObs, this.obsPriority], function(tx, rs) {console.log('inserted');}, errorCB);
+                            tx.executeSql(obsQuery, [reportID, obsID, this.obsItem, this.obsObs, this.obsPriority], function(tx, rs) {console.log('inserted obs:'+obsID);}, errorCB);
                         
                         });
                         
-                        console.log("inserted");
+                        console.log("inserted report:"+reportID);
                         $(".sigReportID").val(reportID);
-                        $('.signature1').modal('show');
+                        //$('.signature1').modal('show');
                     }, errorCB);
                 }, errorCB
             );
-
+            $('.subreport').removeAttr('disabled');
 
         })
-        .on("change", "#clientID", function(e) {
-            e.preventDefault();
-            var clientID = $(this).val();
-            var clientS = "SELECT * FROM client WHERE clientID=?";
-            db.transaction(
-                function(tx) {
-                    tx.executeSql(clientS, [clientID], function(tx, rs) {
-                        $("#clientWork").val(rs.rows.item(0).clientWork);
-                        $("#clientContract").val(rs.rows.item(0).clientContract);
-                    }, errorCB);
-                }, errorCB);
-        })
+        /*
         .on("submit", "#newClient", function(e) {
             e.preventDefault();
             $("#newClient input[type=submit]").attr('disabled', 'disabled');
@@ -398,6 +385,7 @@ function reportPage() {
                     }, errorCB);
                 }, errorCB);
         })
+        */
         .on("click", ".tickboxes .addObsButton", function(e) {
             e.preventDefault();
             var str = $(this).attr('rel');
@@ -410,20 +398,30 @@ function reportPage() {
             $('.media div').remove();
             $('#newObs .obsPriority').val('null');
             $(".newobs").modal("show");
+            $('.addobssub').removeAttr('disabled');
+        })
+        .on("click", ".addobssub", function(e) {
+            $(this).attr('disabled','disabled');
+            $('#newObs').submit();
         })
         .on("submit", "#newObs", function(e) {
             e.preventDefault();
             $(".nodata").remove();
             var result = {};
+            var error = 0;
             $.each($(this).serializeArray(), function() {
                 result[this.name] = this.value;
             });
-            console.log(result.obsObs);
+            console.log(result);
             if (typeof result.obsPriority === 'undefined') {
-                alert("Please select a priority");
-            } else if (result.obsObs == "") {
-                alert("Please enter an observation");
-            } else {
+                //alert("Please select a priority");
+                error++;
+            } 
+            if (result.obsObs == "") {
+                //alert("Please enter an observation");
+                error++;
+            } 
+            if( error == 0 ) {
                 obsArray.push(result);
                 var priorityClass = result.obsPriority.split(" ");
                 priorityClass = 'priority_'+priorityClass[0];
@@ -438,8 +436,11 @@ function reportPage() {
                 $("#newObs .obsImages").val('0');
                 $('.media div').remove();
                 $('#newObs .obsPriority').val('select');
+                console.log('end');
             }
+            $('.addobssub').removeAttr('disabled');
         })
+        /*
         .on("click", ".addmedia", function(e) {
             e.preventDefault();
             navigator.camera.getPicture(onSuccess, onFail, {
@@ -449,6 +450,19 @@ function reportPage() {
         .on("click", ".addmedialib", function(e) {
             e.preventDefault();
             navigator.camera.getPicture(onSuccess, onFail, {
+                destinationType: Camera.DestinationType.DATA_URL,
+                sourceType: Camera.PictureSourceType.PHOTOLIBRARY
+            });
+        })
+        .on("click", ".clientlogoadd", function(e) {
+            e.preventDefault();
+            navigator.camera.getPicture(clientLogoSuccess, onFail, {
+                destinationType: Camera.DestinationType.DATA_URL
+            });
+        })
+        .on("click", ".clientlogoaddlib", function(e) {
+            e.preventDefault();
+            navigator.camera.getPicture(clientLogoSuccess, onFail, {
                 destinationType: Camera.DestinationType.DATA_URL,
                 sourceType: Camera.PictureSourceType.PHOTOLIBRARY
             });
@@ -467,8 +481,15 @@ function reportPage() {
         i = +i + 1;
         $("#newObs .obsImages").val(i);
     }
+    
+    function clientLogoSuccess(imageData) {
+        $('.clientlogo').val( 'data:image/jpeg;base64,' + imageData );
+        //console.log( imageData );
+        $('.clientlogocont').html('<div class="col-sm-2"><img class="img-responsive" src="data:image/jpeg;base64,' + imageData + '" /></div>');
+    }
 
     function onFail(message) {
         alert('Failed because: ' + message);
     }
+    */
 }
