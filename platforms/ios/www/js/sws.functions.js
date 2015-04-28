@@ -16,12 +16,14 @@ var app = {
             }
         );
 		var online = 0;
+		var obsArray = [];
         renderPage();
     },
     onOnline: function() {
         console.log("Doing sync...");
         $("#offline").slideUp(1000);
         $("#online").slideDown(1000);
+        
 		online = 1;
     },
     onOffline: function() {
@@ -51,6 +53,12 @@ function successCB() {
     console.log("Databases created!");
 }
 
+function get_users() {
+    $.get( 'http://sws.tailoreddev.co.uk/ajax/get-users.php', function( data ) {
+        console.log( data );
+    });
+}
+
 function populateDB(tx) {
     // Drop tables - remove in production 
     var cleardb = 0;
@@ -64,9 +72,9 @@ function populateDB(tx) {
     // Create tables
     tx.executeSql('CREATE TABLE IF NOT EXISTS client (clientID TEXT PRIMARY KEY, clientName TEXT, clientContract TEXT, clientWork TEXT, clientLogo TEXT, clientActive INTEGER DEFAULT "1", clientCreated TEXT DEFAULT CURRENT_TIMESTAMP, clientUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
     
-    tx.executeSql('CREATE TABLE IF NOT EXISTS obs (obsID TEXT PRIMARY KEY, obsReport TEXT, obsItem INTEGER, obsObs TEXT, obsPriority TEXT, obsMedia TEXT, obsCreated TEXT DEFAULT CURRENT_TIMESTAMP, obsUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
+    tx.executeSql('CREATE TABLE IF NOT EXISTS obs (obsID TEXT PRIMARY KEY, obsReport TEXT, obsItem INTEGER, obsObs TEXT, obsPriority TEXT, obsMedia TEXT, obsCreated TEXT DEFAULT CURRENT_TIMESTAMP, obsUpdated TEXT DEFAULT CURRENT_TIMESTAMP, obsSync INTEGER DEFAULT 0)');
     
-    tx.executeSql('CREATE TABLE IF NOT EXISTS report (reportID TEXT PRIMARY KEY, reportClient TEXT, reportWork TEXT, reportContract TEXT, reportDate TEXT, reportTime TEXT, reportTick TEXT, reportUser TEXT, reportClientSig TEXT, reportUserSig TEXT, reportCreated TEXT DEFAULT CURRENT_TIMESTAMP, reportUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
+    tx.executeSql('CREATE TABLE IF NOT EXISTS report (reportID TEXT PRIMARY KEY, reportClient TEXT, reportWork TEXT, reportContract TEXT, reportDate TEXT, reportTime TEXT, reportTick TEXT, reportUser TEXT, reportClientSig TEXT, reportUserSig TEXT, reportCreated TEXT DEFAULT CURRENT_TIMESTAMP, reportUpdated TEXT DEFAULT CURRENT_TIMESTAMP, obsSync INTEGER DEFAULT 0)');
     
     tx.executeSql('CREATE TABLE IF NOT EXISTS user (userID TEXT PRIMARY KEY, userEmail TEXT, userPass TEXT, userActive INTEGER DEFAULT "1", userType INTEGER DEFAULT "0", userCreated TEXT DEFAULT CURRENT_TIMESTAMP, userUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
     
@@ -74,13 +82,13 @@ function populateDB(tx) {
     
     tx.executeSql('INSERT INTO user (userID, userEmail, userPass) VALUES ("'+userID+'", "dan@tailored.im", "biscuit")');
     
-    tx.executeSql('CREATE TRIGGER userUpdate AFTER UPDATE OF userID, userEmail, userPass, userActive, userType ON user FOR EACH ROW BEGIN UPDATE user SET userUpdated = CURRENT_TIMESTAMP WHERE userID = old.userID; END;');
+    tx.executeSql('CREATE TRIGGER userUpdate AFTER UPDATE OF userID, userEmail, userPass, userActive, userType ON user FOR EACH ROW BEGIN UPDATE user SET userUpdated = datetime() WHERE userID = old.userID; END;');
     
-    tx.executeSql('CREATE TRIGGER clientUpdate AFTER UPDATE OF clientID, clientName, clientContract, clientWork, clientLogo, clientActive ON client FOR EACH ROW BEGIN UPDATE client SET clientUpdated=CURRENT_TIMESTAMP WHERE clientID=OLD.clientID; END;');
+    tx.executeSql('CREATE TRIGGER clientUpdate AFTER UPDATE OF clientID, clientName, clientContract, clientWork, clientLogo, clientActive ON client FOR EACH ROW BEGIN UPDATE client SET clientUpdated=datetime() WHERE clientID=OLD.clientID; END;');
     
-    tx.executeSql('CREATE TRIGGER obsUpdate AFTER UPDATE OF obsID, obsReport, obsItem, obsObs, obsPriority, obsMedia ON obs FOR EACH ROW BEGIN UPDATE obs SET obsUpdated=CURRENT_TIMESTAMP WHERE obsID=OLD.obsID; END;');
+    tx.executeSql('CREATE TRIGGER obsUpdate AFTER UPDATE OF obsID, obsReport, obsItem, obsObs, obsPriority, obsMedia ON obs FOR EACH ROW BEGIN UPDATE obs SET obsUpdated=datetime() WHERE obsID=OLD.obsID; END;');
     
-    tx.executeSql('CREATE TRIGGER reportUpdate AFTER UPDATE OF reportID, reportClient, reportWork, reportContract, reportDate, reportTime, reportTick, reportUser, reportClientSig, reportUserSig ON report FOR EACH ROW BEGIN UPDATE report SET reportUpdated=CURRENT_TIMESTAMP WHERE reportID=OLD.reportID; END;');
+    tx.executeSql('CREATE TRIGGER reportUpdate AFTER UPDATE OF reportID, reportClient, reportWork, reportContract, reportDate, reportTime, reportTick, reportUser, reportClientSig, reportUserSig ON report FOR EACH ROW BEGIN UPDATE report SET reportUpdated=datetime() WHERE reportID=OLD.reportID; END;');
     
     
 }
@@ -95,11 +103,16 @@ function renderPage() {
           show: true
         });
     }
-    
     var db = window.openDatabase("sws_db", "1.0", "SWS Database", 200000);
     db.transaction(populateDB, errorCB, successCB);
-
+	var loadtest = 0;
+	var obsArray = [];
     $(document)
+	.ready( function(e) {
+		if( online == 1 ) {
+            get_users();
+        }
+	})
     .on("click", ".logout", function(event) {
         event.preventDefault();
         localStorage.clear();
@@ -149,6 +162,7 @@ function renderPage() {
         $(this).addClass('active');
         var title = $(this).attr('title');
         $("#ajaxdata").remove();
+		
         $("#main").load(link, function() {
             $('.navbar-fixed-top .navbar-brand').html(title);
             
@@ -168,8 +182,17 @@ function renderPage() {
                     }, errorCB);
                 
             } else if(link == 'new-report.html' || link == 'admin.html') {
-                
-                reportPage();
+				console.log( loadtest );
+				
+				arrayid = generateUUID();
+				$("#newObs .obsID").val(arrayid);
+				var obsID = $("#newObs .obsID").val();
+                if( loadtest == 0 ) {
+					reportPage();
+					loadtest++;
+				} else {
+					obsArray[obsID] = [];
+				}
             }
             
         });
@@ -225,9 +248,11 @@ function reportDetail(reportID) {
 }
 
 function reportPage() {
-    
     var db = window.openDatabase("sws_db", "1.0", "SWS Database", 200000);
-    /*var d = new Date();
+	var obsArray = [];
+	var obsID = $("#newObs .obsID").val();
+	obsArray[obsID] = [];
+    var d = new Date();
     var h = d.getHours();
     var m = d.getMinutes() < 10 ? '0' : '';
     m += d.getMinutes();
@@ -251,16 +276,15 @@ function reportPage() {
 
     $('#time').val(h + ':' + m);
     var sigCapture = null;
-    */
-    var obsArray = [];
-    console.log(obsArray);
-    /*$(document).ready(function(e) {
+    
+    
+    $(document).ready(function(e) {
 
         sigCapture = new SignatureCapture("signature");
     });
-    */
+    
         $(document)
-      /*  
+        
     .on("click", ".clearsig", function(event) {
         event.preventDefault();
         sigCapture = new SignatureCapture("signature");
@@ -282,6 +306,8 @@ function reportPage() {
             'report': $('.sigReportID').val(),
         };
         var query = "UPDATE report SET reportClientSig=? WHERE reportID=?";
+        //console.log( query );
+        //console.log (fields );
         // Add signature image to database
         db.transaction(
             function(tx) {
@@ -298,7 +324,7 @@ function reportPage() {
         );
         $('.sigimg').attr('src', 'data:image/png; base64,' + sigCapture.toString());
     })
-    */
+    
         .on("click", '.subreport', function(e) {
             e.preventDefault();
             $(this).attr('disabled','disabled');
@@ -327,7 +353,9 @@ function reportPage() {
                     tx.executeSql(query, [reportID, result.reportClient, result.reportWork, result.reportContract, result.reportDate, result.reportTime, ticked, window.localStorage.userID], function(tx, rs) {
                         
                         var obsQuery = "INSERT INTO obs (obsReport, obsID, obsItem, obsObs, obsPriority) VALUES (?,?,?,?,?)";
-                        $.each(obsArray, function() {
+						var obsID = $('.obsID').val();
+						console.log(obsArray[obsID]);
+                        $.each(obsArray[obsID], function() {
                             
                             var obsID = generateUUID();
                             tx.executeSql(obsQuery, [reportID, obsID, this.obsItem, this.obsObs, this.obsPriority], function(tx, rs) {console.log('inserted obs:'+obsID);}, errorCB);
@@ -336,14 +364,13 @@ function reportPage() {
                         
                         console.log("inserted report:"+reportID);
                         $(".sigReportID").val(reportID);
-                        //$('.signature1').modal('show');
+                        $('.signature1').modal('show');
                     }, errorCB);
                 }, errorCB
             );
             $('.subreport').removeAttr('disabled');
 
         })
-        /*
         .on("submit", "#newClient", function(e) {
             e.preventDefault();
             $("#newClient input[type=submit]").attr('disabled', 'disabled');
@@ -385,7 +412,7 @@ function reportPage() {
                     }, errorCB);
                 }, errorCB);
         })
-        */
+        
         .on("click", ".tickboxes .addObsButton", function(e) {
             e.preventDefault();
             var str = $(this).attr('rel');
@@ -397,6 +424,7 @@ function reportPage() {
             $("#newObs .obsImages").val('0');
             $('.media div').remove();
             $('#newObs .obsPriority').val('null');
+			
             $(".newobs").modal("show");
             $('.addobssub').removeAttr('disabled');
         })
@@ -412,7 +440,6 @@ function reportPage() {
             $.each($(this).serializeArray(), function() {
                 result[this.name] = this.value;
             });
-            console.log(result);
             if (typeof result.obsPriority === 'undefined') {
                 //alert("Please select a priority");
                 error++;
@@ -422,7 +449,12 @@ function reportPage() {
                 error++;
             } 
             if( error == 0 ) {
-                obsArray.push(result);
+				var obsID = result.obsID;
+				if( typeof obsArray[obsID] === 'undefined' ) {
+					obsArray[obsID] = [];
+				}
+                obsArray[obsID].push(result);
+				
                 var priorityClass = result.obsPriority.split(" ");
                 priorityClass = 'priority_'+priorityClass[0];
                 var output = '<tr><td>' + result.obsItem + '</td><td>' + result.obsObs + '</td><td class="'+priorityClass+'">' + result.obsPriority + '</td><td>' + result.obsImages + '</td><td><button class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-pencil"></span></button> <button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button></td></tr>';
@@ -439,8 +471,9 @@ function reportPage() {
                 console.log('end');
             }
             $('.addobssub').removeAttr('disabled');
+			console.log(obsArray);
         })
-        /*
+        
         .on("click", ".addmedia", function(e) {
             e.preventDefault();
             navigator.camera.getPicture(onSuccess, onFail, {
@@ -491,5 +524,5 @@ function reportPage() {
     function onFail(message) {
         alert('Failed because: ' + message);
     }
-    */
+    
 }

@@ -8,13 +8,13 @@ var app = {
         document.addEventListener('offline', this.onOffline, false);
     },
     onDeviceReady: function() {
-        //console.log(navigator.connection.type);
+        console.log(navigator.connection.type);
         FastClick.attach(document.body);
-        /*cordova.plugins.printer.isAvailable(
+        cordova.plugins.printer.isAvailable(
             function (isAvailable) {
                 console.log(isAvailable ? 'Service is available' : 'Service NOT available');
             }
-        );*/
+        );
 		var online = 0;
 		var obsArray = [];
         renderPage();
@@ -23,6 +23,7 @@ var app = {
         console.log("Doing sync...");
         $("#offline").slideUp(1000);
         $("#online").slideDown(1000);
+        
 		online = 1;
     },
     onOffline: function() {
@@ -52,6 +53,12 @@ function successCB() {
     console.log("Databases created!");
 }
 
+function get_users() {
+    $.get( 'http://sws.tailoreddev.co.uk/ajax/get-users.php', function( data ) {
+        console.log( data );
+    });
+}
+
 function populateDB(tx) {
     // Drop tables - remove in production 
     var cleardb = 0;
@@ -65,9 +72,9 @@ function populateDB(tx) {
     // Create tables
     tx.executeSql('CREATE TABLE IF NOT EXISTS client (clientID TEXT PRIMARY KEY, clientName TEXT, clientContract TEXT, clientWork TEXT, clientLogo TEXT, clientActive INTEGER DEFAULT "1", clientCreated TEXT DEFAULT CURRENT_TIMESTAMP, clientUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
     
-    tx.executeSql('CREATE TABLE IF NOT EXISTS obs (obsID TEXT PRIMARY KEY, obsReport TEXT, obsItem INTEGER, obsObs TEXT, obsPriority TEXT, obsMedia TEXT, obsCreated TEXT DEFAULT CURRENT_TIMESTAMP, obsUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
+    tx.executeSql('CREATE TABLE IF NOT EXISTS obs (obsID TEXT PRIMARY KEY, obsReport TEXT, obsItem INTEGER, obsObs TEXT, obsPriority TEXT, obsMedia TEXT, obsCreated TEXT DEFAULT CURRENT_TIMESTAMP, obsUpdated TEXT DEFAULT CURRENT_TIMESTAMP, obsSync INTEGER DEFAULT 0)');
     
-    tx.executeSql('CREATE TABLE IF NOT EXISTS report (reportID TEXT PRIMARY KEY, reportClient TEXT, reportWork TEXT, reportContract TEXT, reportDate TEXT, reportTime TEXT, reportTick TEXT, reportUser TEXT, reportClientSig TEXT, reportUserSig TEXT, reportCreated TEXT DEFAULT CURRENT_TIMESTAMP, reportUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
+    tx.executeSql('CREATE TABLE IF NOT EXISTS report (reportID TEXT PRIMARY KEY, reportClient TEXT, reportWork TEXT, reportContract TEXT, reportDate TEXT, reportTime TEXT, reportTick TEXT, reportUser TEXT, reportClientSig TEXT, reportUserSig TEXT, reportCreated TEXT DEFAULT CURRENT_TIMESTAMP, reportUpdated TEXT DEFAULT CURRENT_TIMESTAMP, obsSync INTEGER DEFAULT 0)');
     
     tx.executeSql('CREATE TABLE IF NOT EXISTS user (userID TEXT PRIMARY KEY, userEmail TEXT, userPass TEXT, userActive INTEGER DEFAULT "1", userType INTEGER DEFAULT "0", userCreated TEXT DEFAULT CURRENT_TIMESTAMP, userUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
     
@@ -75,13 +82,13 @@ function populateDB(tx) {
     
     tx.executeSql('INSERT INTO user (userID, userEmail, userPass) VALUES ("'+userID+'", "dan@tailored.im", "biscuit")');
     
-    tx.executeSql('CREATE TRIGGER userUpdate AFTER UPDATE OF userID, userEmail, userPass, userActive, userType ON user FOR EACH ROW BEGIN UPDATE user SET userUpdated = CURRENT_TIMESTAMP WHERE userID = old.userID; END;');
+    tx.executeSql('CREATE TRIGGER userUpdate AFTER UPDATE OF userID, userEmail, userPass, userActive, userType ON user FOR EACH ROW BEGIN UPDATE user SET userUpdated = datetime() WHERE userID = old.userID; END;');
     
-    tx.executeSql('CREATE TRIGGER clientUpdate AFTER UPDATE OF clientID, clientName, clientContract, clientWork, clientLogo, clientActive ON client FOR EACH ROW BEGIN UPDATE client SET clientUpdated=CURRENT_TIMESTAMP WHERE clientID=OLD.clientID; END;');
+    tx.executeSql('CREATE TRIGGER clientUpdate AFTER UPDATE OF clientID, clientName, clientContract, clientWork, clientLogo, clientActive ON client FOR EACH ROW BEGIN UPDATE client SET clientUpdated=datetime() WHERE clientID=OLD.clientID; END;');
     
-    tx.executeSql('CREATE TRIGGER obsUpdate AFTER UPDATE OF obsID, obsReport, obsItem, obsObs, obsPriority, obsMedia ON obs FOR EACH ROW BEGIN UPDATE obs SET obsUpdated=CURRENT_TIMESTAMP WHERE obsID=OLD.obsID; END;');
+    tx.executeSql('CREATE TRIGGER obsUpdate AFTER UPDATE OF obsID, obsReport, obsItem, obsObs, obsPriority, obsMedia ON obs FOR EACH ROW BEGIN UPDATE obs SET obsUpdated=datetime() WHERE obsID=OLD.obsID; END;');
     
-    tx.executeSql('CREATE TRIGGER reportUpdate AFTER UPDATE OF reportID, reportClient, reportWork, reportContract, reportDate, reportTime, reportTick, reportUser, reportClientSig, reportUserSig ON report FOR EACH ROW BEGIN UPDATE report SET reportUpdated=CURRENT_TIMESTAMP WHERE reportID=OLD.reportID; END;');
+    tx.executeSql('CREATE TRIGGER reportUpdate AFTER UPDATE OF reportID, reportClient, reportWork, reportContract, reportDate, reportTime, reportTick, reportUser, reportClientSig, reportUserSig ON report FOR EACH ROW BEGIN UPDATE report SET reportUpdated=datetime() WHERE reportID=OLD.reportID; END;');
     
     
 }
@@ -102,7 +109,9 @@ function renderPage() {
 	var obsArray = [];
     $(document)
 	.ready( function(e) {
-		
+		if( online == 1 ) {
+            get_users();
+        }
 	})
     .on("click", ".logout", function(event) {
         event.preventDefault();
@@ -297,6 +306,8 @@ function reportPage() {
             'report': $('.sigReportID').val(),
         };
         var query = "UPDATE report SET reportClientSig=? WHERE reportID=?";
+        //console.log( query );
+        //console.log (fields );
         // Add signature image to database
         db.transaction(
             function(tx) {
@@ -353,7 +364,7 @@ function reportPage() {
                         
                         console.log("inserted report:"+reportID);
                         $(".sigReportID").val(reportID);
-                        //$('.signature1').modal('show');
+                        $('.signature1').modal('show');
                     }, errorCB);
                 }, errorCB
             );
