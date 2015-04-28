@@ -104,6 +104,26 @@ function get_users() {
 		});
 	}, 'json' );
 }
+
+function get_clients() {
+	
+	// TODO: Add a check on last updated column
+	
+	$.get( 'http://sws.tailoreddev.co.uk/ajax/get-clients.php', function( data ) {
+		var db = window.openDatabase("sws_db", "1.0", "SWS Database", 200000);
+		$.each( data, function ( i, item ) {
+			
+			var query = 'INSERT OR REPLACE INTO user ( userID, userName, userEmail, userPass, userActive, userType, userCreated ) VALUES ( "'+data[i].userID+'", "'+data[i].userName+'", "'+data[i].userEmail+'", "'+data[i].userPass+'", "'+data[i].userActive+'", "'+data[i].userType+'", "'+data[i].userCreated+'" )';
+			console.log( query );
+			db.transaction( 
+				function( tx ) {
+					tx.executeSql( query ); 
+				}
+			);
+		});
+	}, 'json' );
+}
+
 function renderPage() {
 	console.log( 'Online: '+online );
     if(window.localStorage.userID != undefined) {
@@ -121,7 +141,12 @@ function renderPage() {
 	var obsArray = [];
     $(document)
 	.ready( function(e) {
+		var title = $('a.dashboard').attr('title');
+        $("#ajaxdata").remove();
 		
+        $("#main").load('dashboard.html', function() {
+           $('.navbar-fixed-top .navbar-brand').html(title);
+		});
 
 		//if( online == 1 ) {
             get_users();
