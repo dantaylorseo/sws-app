@@ -66,7 +66,7 @@ function populateDB(tx) {
     }
 
     // Create tables
-    tx.executeSql('CREATE TABLE IF NOT EXISTS client (clientID TEXT PRIMARY KEY, clientName TEXT, clientContract TEXT, clientWork TEXT, clientLogo TEXT, clientActive INTEGER DEFAULT "1", clientCreated TEXT DEFAULT CURRENT_TIMESTAMP, clientUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
+    tx.executeSql('CREATE TABLE IF NOT EXISTS client (clientID TEXT PRIMARY KEY, clientName TEXT, clientEmail TEXT, clientContract TEXT, clientWork TEXT, clientLogo TEXT, clientActive INTEGER DEFAULT "1", clientCreated TEXT DEFAULT CURRENT_TIMESTAMP, clientUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
     
     tx.executeSql('CREATE TABLE IF NOT EXISTS obs (obsID TEXT PRIMARY KEY, obsReport TEXT, obsItem INTEGER, obsObs TEXT, obsPriority TEXT, obsMedia TEXT, obsCreated TEXT DEFAULT CURRENT_TIMESTAMP, obsUpdated TEXT DEFAULT CURRENT_TIMESTAMP, obsSync INTEGER DEFAULT 0)');
     
@@ -113,6 +113,25 @@ function get_clients() {
 		var db = window.openDatabase("sws_db", "1.0", "SWS Database", 200000);
 		$.each( data, function ( i, item ) {
 			
+			var query = 'INSERT OR REPLACE INTO client ( clientID, clientName, clientEmail, clientActive, clientCreated ) VALUES ( "'+data[i].clientID+'", "'+data[i].clientName+'", "'+data[i].clientEmail+'", "'+data[i].clientActive+'", "'+data[i].clientCreated+'" )';
+			console.log( query );
+			db.transaction( 
+				function( tx ) {
+					tx.executeSql( query ); 
+				}
+			);
+		});
+	}, 'json' );
+}
+
+function get_clients() {
+	
+	// TODO: Add a check on last updated column
+	
+	$.get( 'http://sws.tailoreddev.co.uk/ajax/get-clients.php', function( data ) {
+		var db = window.openDatabase("sws_db", "1.0", "SWS Database", 200000);
+		$.each( data, function ( i, item ) {
+			
 			var query = 'INSERT OR REPLACE INTO user ( userID, userName, userEmail, userPass, userActive, userType, userCreated ) VALUES ( "'+data[i].userID+'", "'+data[i].userName+'", "'+data[i].userEmail+'", "'+data[i].userPass+'", "'+data[i].userActive+'", "'+data[i].userType+'", "'+data[i].userCreated+'" )';
 			console.log( query );
 			db.transaction( 
@@ -126,7 +145,7 @@ function get_clients() {
 
 function renderPage() {
 	console.log( 'Online: '+online );
-    if(window.localStorage.userID != undefined) {
+    /*if(window.localStorage.userID != undefined) {
         
     } else {
         $('.login-modal').modal({
@@ -135,6 +154,7 @@ function renderPage() {
           show: true
         });
     }
+    */
     var db = window.openDatabase("sws_db", "1.0", "SWS Database", 200000);
     db.transaction(populateDB, errorCB, successCB);
 	var loadtest = 0;
@@ -144,13 +164,21 @@ function renderPage() {
 		var title = $('a.dashboard').attr('title');
         $("#ajaxdata").remove();
 		
-        $("#main").load('dashboard.html', function() {
+		get_users();
+		get_clients();
+        
+		$("#main").load('dashboard.html', function() {
            $('.navbar-fixed-top .navbar-brand').html(title);
 		});
 
 		//if( online == 1 ) {
-            get_users();
+            
         //}
+	})
+	.on( "click", ".sync", function( event ) {
+		event.preventDefault();
+		get_users();
+		get_clients();
 	})
     .on("click", ".logout", function(event) {
         event.preventDefault();
@@ -397,10 +425,15 @@ function reportPage() {
                         $.each(obsArray[obsID], function() {
                             
                             var obsID = generateUUID();
-                            tx.executeSql(obsQuery, [reportID, obsID, this.obsItem, this.obsObs, this.obsPriority], function(tx, rs) {console.log('inserted obs:'+obsID);}, errorCB);
+                            tx.executeSql(obsQuery, [reportID, obsID, this.obsItem, this.obsObs, this.obsPriority], function(tx, rs) {
+									ajax_insert_obs( reportID, obsID, this.obsItem, this.obsObs, this.obsPriority );
+									console.log('inserted obs:'+obsID);
+								}, errorCB);
                         
                         });
                         
+						ajax_insert_report( reportID, result.reportClient, result.reportWork, result.reportContract, result.reportDate, result.reportTime, ticked, window.localStorage.userID );
+						
                         console.log("inserted report:"+reportID);
                         $(".sigReportID").val(reportID);
                         $('.signature1').modal('show');
@@ -546,6 +579,38 @@ function reportPage() {
         .on('click', '.dropdown-menu.dropdown-menu-form', function(e) {
             e.stopPropagation();
         });
+	
+	function ajax_insert_obs( reportID, obsID, obsItem, obsObs, obsPriority ) {
+		var data = {
+			reportID : reportID,
+			obsID : obsID,
+			obsItem : obsItem,
+			reportContract : reportContract,
+			obsObs : obsObs,
+			obsPriority : obsPriority,
+		};	
+		/*$.post( 'http://sws.tailoreddev.co.uk/ajax/add-obs.php', data, function( data ) {
+			
+		}, 'json' );*/
+	}
+	
+	function ajax_insert_report( reportID, reportClient, reportWork, reportContract, reportDate, reportTime, reportTick, reportUser ) {
+		
+		var data = {
+			reportID : reportID,
+			reportClient : reportClient,
+			reportWork : reportWork,
+			reportContract : reportContract,
+			reportDate : reportDate,
+			reportTime : reportTime,
+			reportTick : reportTick,
+			reportUser : reportUser
+		};
+		
+		$.post( 'http://sws.tailoreddev.co.uk/ajax/add-report.php', data, function( data ) {
+			
+		}, 'json' );
+	}
 
     function onSuccess(imageData) {
         var i = $("#newObs .obsImages").val();

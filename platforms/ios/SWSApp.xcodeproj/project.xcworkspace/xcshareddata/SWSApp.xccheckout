@@ -11,7 +11,7 @@
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>A5F340CAB5AD6E876E176765402324B518FF51D5</key>
-		<string>github.com:dantaylorseo/sws-app.git</string>
+		<string>http://github.com/dantaylorseo/sws-app.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>platforms/ios/SWSApp.xcodeproj</string>
@@ -21,7 +21,7 @@
 		<string>../../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>github.com:dantaylorseo/sws-app.git</string>
+	<string>http://github.com/dantaylorseo/sws-app.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
