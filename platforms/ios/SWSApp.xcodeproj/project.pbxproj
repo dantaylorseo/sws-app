@@ -522,7 +522,7 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = SWSApp;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "b8fdcae0-4060-4c81-9e6c-7e51e3bff164";
 				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Debug;
@@ -554,7 +554,7 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = SWSApp;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "b8fdcae0-4060-4c81-9e6c-7e51e3bff164";
 				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Release;

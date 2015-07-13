@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>South Wales Safety Consutancy</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+    <link href="css/datepicker.css" rel="stylesheet" type="text/css">
+    <link href="css/custom.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <div class="modal fade login-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img src="images/Logo2012.png" class="img-responsive" /> 
+            </div>
+            <div class="modal-body">
+                <p class="modal-title">Please Login to Continue</p>
+                <form>
+                    <p><input type="email" id="usernamelogin" placeholder="Email" class="form-control"></p>
+                    <p><input type="password" id="passwordlogin" placeholder="Password" class="form-control"></p>
+                </div>
+            <div class="modal-footer">
+                <p><a href="#" class="btn btn-link">Forgot password?</a> <button type="submit" class="btn btn-success">Sign In</button></p>
+                </form>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal newobs fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="myLargeModalLabel">Add New Observation</h4>
+                </div>
+                <div class="modal-body">
+                    <form role="form" id="newObs">
+                        <div class="form-group row">
+                            <label for="obsItem " class="col-md-12">Item Number</label>
+                            <div class="col-md-1">
+                                <input type="text" class="form-control" id="obsItem" readonly name="obsItem" placeholder="Item Number">
+                            </div>
+                            <div class="col-md-11">
+                                <input type="text" class="form-control" id="obsName" readonly name="obsName" placeholder="Item Number">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="obsObs">Observation/Reccomendation</label>
+                            <textarea class="form-control needsclick" id="obsObs" name="obsObs" placeholder="Observation/Reccomendation" rows="5"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="obsPriority">Priority</label>
+                            <select class="form-control needsclick" name="obsPriority" class="obsPriority">
+                              <option value="null">Priority</option>
+                              <option value="A - Immediate">A - Immediate</option>
+                              <option value="B - 1 Day">B - 1 Day</option>
+                              <option value="C - 1 Week">C - 1 Week</option>
+                              <option value="D - 1 Month">D - 1 Month</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+
+                            <label for="obsImages">Media</label>
+							<input type="hidden" value="0" class="obsImages" name="obsImages" />
+                            <input type="hidden" value="0" class="obsID" name="obsID" />
+                            <div class="row media">
+                                
+                            </div>
+                                <button type="button" class="btn btn-info addmedia"><span class="glyphicon glyphicon-camera"></span> Take Photo</button> <button type="button" class="btn btn-warning  addmedialib"><span class="glyphicon glyphicon-picture"></span> Photo Library</button>
+                            
+                        </div>
+                        
+                </div>
+                    <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary addobssub needsclick">Add Observation</button>
+                        </div>
+                    </form>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </div>
+    <div class="modal signature1 fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myLargeModalLabel">Client Signtaure</h4>
+                </div>
+                <form role="form">
+                    <div class="modal-body">
+                        <div id="canvasContainer">
+                            <canvas id="signature"></canvas>
+                        </div>
+                        <input type="hidden" value="" name="sigReportID" class="sigReportID">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default clearsig">Clear</button>
+                        <button type="submit" class="btn btn-primary addsig needsclick">Add Signature</button>
+                    </div>
+                </form>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </div>
+    <div class="modal signature2 fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="myLargeModalLabel">Client Signtaure</h4>
+                </div>
+                <form role="form">
+                    <div class="modal-body">
+                        <img class="sigimg" src="" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default clearsig" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary addsig needsclick">Add Signature</button>
+                    </div>
+                </form>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </div>
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <span class="navbar-brand" href="#">Dashboard</span>
+        </div>
+    </nav>
+    <nav class="navbar navbar-inverse navbar-fixed-bottom" role="navigation">
+        <div class="container">
+            
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="index.html" class="innerlink active dashboard" title="South Wales Safety Consultancy"><i class="glyphicon glyphicon-home"></i><br>Dashboard</a>
+                    </li>
+                    <li>
+                        <a href="new-report.html" class="innerlink" title="Safety Inspection Report"><i class="glyphicon glyphicon-plus-sign"></i><br>Add New</a>
+                    </li>
+                    <li>
+                        <a href="reports.html" class="innerlink" title="View Safety Inspection Report"><i class="glyphicon glyphicon-search"></i><br>View Reports</a>
+                    </li>
+                    <li>
+                        <a href="sync.html" class="innerlink sync" title="Sync Data"><i class="glyphicon glyphicon-refresh"></i><br>Sync</a>
+                    </li>
+                    <li>
+                        <a href="#" class="logout" title="Admin"><i class="glyphicon glyphicon-log-out"></i><br>Logout</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+    <div class="container" id="main">
+        
+    </div>
+    <div class="footer sync" id="sync">
+        <div class="container">
+            <p><span class="glyphicon glyphicon-refresh rotate"></span> Syncing data...</p>
+        </div>
+    </div>
+    <div class="footer online" id="online">
+        <div class="container">
+            <p><span class="glyphicon glyphicon-globe rotate"></span> Working online.</p>
+        </div>
+    </div>
+    <div class="footer offline" id="offline">
+        <div class="container">
+            <p><span class="glyphicon glyphicon-remove-sign"></span> Working offline.</p>
+        </div>
+    </div>
+    <script src="cordova.js"></script>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/fastclick.js"></script>
+    <script type="text/javascript" src="js/bootstrap-datepicker.js"></script>
+    <script type="text/javascript" src="js/modernizr.js"></script>
+    <script type="text/javascript" src="js/sws.functions.js"></script>
+    <script type="text/javascript" src="js/signatureCapture.js"></script>
+    <script type="text/javascript">
+        app.initialize();
+    </script>
+</body>
+</html>

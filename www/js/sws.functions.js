@@ -17,6 +17,7 @@ var app = {
         );*/
 		var online = 0;
 		var obsArray = [];
+		var db = open_db();
         renderPage();
     },
     onOnline: function() {
@@ -34,6 +35,11 @@ var app = {
 		online = 1;
     }
 };
+var db_ver = "1.0"; 
+
+function open_db( ver ) {
+	return window.openDatabase("sws_db", db_ver, "SWS Database", 200000000);	
+}
 
 function generateUUID() {
     var d = new Date().getTime();
@@ -63,18 +69,24 @@ function populateDB(tx) {
         tx.executeSql('DROP TABLE IF EXISTS obs');
         tx.executeSql('DROP TABLE IF EXISTS report');
         tx.executeSql('DROP TABLE IF EXISTS user');
+		tx.executeSql('DROP TABLE IF EXISTS contact');
+		tx.executeSql('DROP TABLE IF EXISTS contract');
     }
 
     // Create tables
-    tx.executeSql('CREATE TABLE IF NOT EXISTS client (clientID TEXT PRIMARY KEY, clientName TEXT, clientEmail TEXT, clientContract TEXT, clientWork TEXT, clientLogo TEXT, clientActive INTEGER DEFAULT "1", clientCreated TEXT DEFAULT CURRENT_TIMESTAMP, clientUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
+    tx.executeSql('CREATE TABLE IF NOT EXISTS client (clientID TEXT PRIMARY KEY, clientName TEXT, clientEmail TEXT, clientLogo TEXT, clientActive INTEGER DEFAULT "1", clientCreated TEXT DEFAULT CURRENT_TIMESTAMP, clientUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
     
-    tx.executeSql('CREATE TABLE IF NOT EXISTS obs (obsID TEXT PRIMARY KEY, obsReport TEXT, obsItem INTEGER, obsObs TEXT, obsPriority TEXT, obsMedia TEXT, obsCreated TEXT DEFAULT CURRENT_TIMESTAMP, obsUpdated TEXT DEFAULT CURRENT_TIMESTAMP, obsSync INTEGER DEFAULT 0)');
+    tx.executeSql('CREATE TABLE IF NOT EXISTS obs (obsID TEXT PRIMARY KEY, obsReport TEXT, obsItem INTEGER, obsObs TEXT, obsPriority TEXT, obsMedia TEXT, obsCreated TEXT DEFAULT CURRENT_TIMESTAMP, obsUpdated TEXT DEFAULT CURRENT_TIMESTAMP )');
     
-    tx.executeSql('CREATE TABLE IF NOT EXISTS report (reportID TEXT PRIMARY KEY, reportClient TEXT, reportWork TEXT, reportContract TEXT, reportDate TEXT, reportTime TEXT, reportTick TEXT, reportUser TEXT, reportClientSig TEXT, reportUserSig TEXT, reportCreated TEXT DEFAULT CURRENT_TIMESTAMP, reportUpdated TEXT DEFAULT CURRENT_TIMESTAMP, obsSync INTEGER DEFAULT 0)');
+    tx.executeSql('CREATE TABLE IF NOT EXISTS report (reportID TEXT PRIMARY KEY, reportClient TEXT, reportWork TEXT, reportContract TEXT, reportDate TEXT, reportTime TEXT, reportTick TEXT, reportUser TEXT, reportClientSig TEXT, reportUserSig TEXT, reportCreated TEXT DEFAULT CURRENT_TIMESTAMP, reportUpdated TEXT DEFAULT CURRENT_TIMESTAMP )');
     
     tx.executeSql('CREATE TABLE IF NOT EXISTS user (userID TEXT PRIMARY KEY, userName TEXT, userEmail TEXT, userPass TEXT, userActive INTEGER DEFAULT "1", userType INTEGER DEFAULT "0", userCreated TEXT DEFAULT CURRENT_TIMESTAMP, userUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
+	
+	tx.executeSql('CREATE TABLE IF NOT EXISTS contact (contactID TEXT PRIMARY KEY, contactName TEXT, contactClient TEXT, contactEmail TEXT, contactTel TEXT, contactActive INTEGER DEFAULT "1", contactCreated TEXT DEFAULT CURRENT_TIMESTAMP, contactUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
+	
+	tx.executeSql('CREATE TABLE IF NOT EXISTS contract (contractID TEXT PRIMARY KEY, contractClient TEXT, contractNumber TEXT, contractLocation TEXT, contractActive INTEGER DEFAULT "1", contractCreated TEXT DEFAULT CURRENT_TIMESTAMP, contractUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
     
-    userID = generateUUID();
+    var userID = generateUUID();
     
     tx.executeSql('CREATE TRIGGER userUpdate AFTER UPDATE OF userID, userEmail, userPass, userActive, userType ON user FOR EACH ROW BEGIN UPDATE user SET userUpdated = datetime() WHERE userID = old.userID; END;');
     
@@ -91,7 +103,7 @@ function get_users() {
 	// TODO: Add a check on last updated column
 	
 	$.get( 'http://sws.tailoreddev.co.uk/ajax/get-users.php', function( data ) {
-		var db = window.openDatabase("sws_db", "1.0", "SWS Database", 200000);
+		var db = open_db();
 		$.each( data, function ( i, item ) {
 			
 			var query = 'INSERT OR REPLACE INTO user ( userID, userName, userEmail, userPass, userActive, userType, userCreated ) VALUES ( "'+data[i].userID+'", "'+data[i].userName+'", "'+data[i].userEmail+'", "'+data[i].userPass+'", "'+data[i].userActive+'", "'+data[i].userType+'", "'+data[i].userCreated+'" )';
@@ -108,9 +120,9 @@ function get_users() {
 function get_clients() {
 	
 	// TODO: Add a check on last updated column
-	
+	console.log( 'getting clients...');
 	$.get( 'http://sws.tailoreddev.co.uk/ajax/get-clients.php', function( data ) {
-		var db = window.openDatabase("sws_db", "1.0", "SWS Database", 200000);
+		var db = open_db();
 		$.each( data, function ( i, item ) {
 			
 			var query = 'INSERT OR REPLACE INTO client ( clientID, clientName, clientEmail, clientActive, clientCreated ) VALUES ( "'+data[i].clientID+'", "'+data[i].clientName+'", "'+data[i].clientEmail+'", "'+data[i].clientActive+'", "'+data[i].clientCreated+'" )';
@@ -124,24 +136,6 @@ function get_clients() {
 	}, 'json' );
 }
 
-function get_clients() {
-	
-	// TODO: Add a check on last updated column
-	
-	$.get( 'http://sws.tailoreddev.co.uk/ajax/get-clients.php', function( data ) {
-		var db = window.openDatabase("sws_db", "1.0", "SWS Database", 200000);
-		$.each( data, function ( i, item ) {
-			
-			var query = 'INSERT OR REPLACE INTO user ( userID, userName, userEmail, userPass, userActive, userType, userCreated ) VALUES ( "'+data[i].userID+'", "'+data[i].userName+'", "'+data[i].userEmail+'", "'+data[i].userPass+'", "'+data[i].userActive+'", "'+data[i].userType+'", "'+data[i].userCreated+'" )';
-			console.log( query );
-			db.transaction( 
-				function( tx ) {
-					tx.executeSql( query ); 
-				}
-			);
-		});
-	}, 'json' );
-}
 
 function renderPage() {
 	console.log( 'Online: '+online );
@@ -155,7 +149,7 @@ function renderPage() {
         });
     }
     */
-    var db = window.openDatabase("sws_db", "1.0", "SWS Database", 200000);
+    var db = open_db();
     db.transaction(populateDB, errorCB, successCB);
 	var loadtest = 0;
 	var obsArray = [];
@@ -276,7 +270,7 @@ function renderPage() {
 }
 
 function reportDetail(reportID) {
-    var db = window.openDatabase("sws_db", "1.0", "SWS Database", 200000);
+    var db = open_db();
     var query = 'SELECT * FROM report INNER JOIN client ON clientID = reportClient WHERE reportID="'+reportID+'"';
     db.transaction(
         function(tx) {
@@ -315,7 +309,7 @@ function reportDetail(reportID) {
 }
 
 function reportPage() {
-    var db = window.openDatabase("sws_db", "1.0", "SWS Database", 200000);
+    var db = open_db();
 	var obsArray = [];
 	var obsID = $("#newObs .obsID").val();
 	obsArray[obsID] = [];
@@ -330,10 +324,10 @@ function reportPage() {
     var clientQ = "SELECT * FROM client ORDER BY clientName ASC";
     db.transaction(
         function(tx) {
-            var output = '';
+            var output = '<option readonly disabled selected>Select Client</option>';
             tx.executeSql(clientQ, [], function(tx, rs) {
                 for (var i = 0; i < rs.rows.length; i++) {
-                    output += '<option value="' + rs.rows.item(i).clientID + '">' + rs.rows.item(i).clientName + ' (' + rs.rows.item(i).clientID + ')</option>';
+                    output += '<option value="' + rs.rows.item(i).clientID + '">' + rs.rows.item(i).clientName + '</option>';
                 }
                 $("#clientID").html(output);
             }, errorCB);
