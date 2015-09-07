@@ -1,18 +1,32 @@
 <div id="ajaxdata">
-    <div class="row">
-    	<div class="col-md-4 dashbox dash-logo">
-        	<img src="images/Logo2012.png" class="img-responsive" width="412" height="159" alt=""/>
-        	<h1>Safety Inspection Report App</h1>
+	<div id="dashboard-back"></div>
+    <div class="row" id="dashboard-front">
+    	<div class="col-md-6 dashbox dash-logo">
+        	<img src="images/Logo2012.png" class="center-block img-responsive" width="412" height="159" alt=""/>
         </div>
-        <div class="col-md-4 dashbox">
-        	
-            <h1>Add New Report</h1>
+        <div class="col-md-6 dashbox">
+            <div class="list-group">
+                <a href="new-report.html" class="list-group-item innerlink">
+                	<span class="badge"><i class="glyphicon glyphicon-chevron-right"></i></span>
+                	<h2>Add New Report</h2>
+                    <p>Add a new safety report here.</p>
+                </a>
+                <a href="reports.html" class="list-group-item innerlink">
+                	<span class="badge"><i class="glyphicon glyphicon-chevron-right"></i></span>
+                	<h2>View Reports</h2>
+                    <p>View previously saved reports.</p>
+                </a>
+                <a href="sync.html" class="list-group-item syncpage">
+                	<span class="badge"><i class="glyphicon glyphicon-chevron-right"></i></span>
+                	<h2>Sync Data</h2>
+                    <p>Sync data to and from the central server.</p>
+                </a>
+                <a href="#" class="list-group-item logout">
+                	<span class="badge"><i class="glyphicon glyphicon-chevron-right"></i></span>
+                	<h2>Logout</h2>
+                    <p>Logout of the app and return to login screen.</p>
+                </a>
+            </div>
         </div>
-        <div class="col-md-4 dashbox">C</div>
-    </div>
-    <div class="row">
-    	<div class="col-md-4 dashbox">A</div>
-        <div class="col-md-4 dashbox">B</div>
-        <div class="col-md-4 dashbox">C</div>
     </div>
 </div>

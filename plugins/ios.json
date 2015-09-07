@@ -9,11 +9,23 @@
                 "parents": {
                     "/*": [
                         {
-                            "xml": "<feature name=\"Printer\"><param name=\"ios-package\" value=\"APPPrinter\" /></feature>",
+                            "xml": "<feature name=\"Battery\"><param name=\"ios-package\" value=\"CDVBattery\" /></feature>",
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"Battery\"><param name=\"ios-package\" value=\"CDVBattery\" /></feature>",
+                            "xml": "<feature name=\"Console\"><param name=\"ios-package\" value=\"CDVLogger\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"NetworkStatus\"><param name=\"ios-package\" value=\"CDVConnection\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Vibration\"><param name=\"ios-package\" value=\"CDVVibration\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"InAppBrowser\"><param name=\"ios-package\" value=\"CDVInAppBrowser\" /></feature>",
                             "count": 1
                         },
                         {
@@ -22,18 +34,6 @@
                         },
                         {
                             "xml": "<preference name=\"CameraUsesGeolocation\" value=\"false\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Console\"><param name=\"ios-package\" value=\"CDVLogger\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Notification\"><param name=\"ios-package\" value=\"CDVNotification\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"NetworkStatus\"><param name=\"ios-package\" value=\"CDVConnection\" /></feature>",
                             "count": 1
                         },
                         {
@@ -49,7 +49,11 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"Vibration\"><param name=\"ios-package\" value=\"CDVVibration\" /></feature>",
+                            "xml": "<feature name=\"Notification\"><param name=\"ios-package\" value=\"CDVNotification\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Printer\"><param name=\"ios-package\" value=\"APPPrinter\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -61,11 +65,19 @@
                         {
                             "xml": "true",
                             "count": 1
+                        },
+                        {
+                            "xml": true,
+                            "count": 1
                         }
                     ],
                     "CoreLocation.framework": [
                         {
                             "xml": "false",
+                            "count": 1
+                        },
+                        {
+                            "xml": false,
                             "count": 1
                         }
                     ],
@@ -73,11 +85,19 @@
                         {
                             "xml": "false",
                             "count": 2
+                        },
+                        {
+                            "xml": false,
+                            "count": 2
                         }
                     ],
                     "AssetsLibrary.framework": [
                         {
                             "xml": "false",
+                            "count": 1
+                        },
+                        {
+                            "xml": false,
                             "count": 1
                         }
                     ],
@@ -85,17 +105,31 @@
                         {
                             "xml": "false",
                             "count": 1
+                        },
+                        {
+                            "xml": false,
+                            "count": 1
                         }
                     ],
                     "AudioToolbox.framework": [
                         {
                             "xml": "true",
                             "count": 2
+                        },
+                        {
+                            "xml": true,
+                            "count": 1
                         }
                     ],
                     "SystemConfiguration.framework": [
                         {
                             "xml": "true",
+                            "count": 1
+                        }
+                    ],
+                    "AVFoundation.framework": [
+                        {
+                            "xml": false,
                             "count": 1
                         }
                     ]
@@ -114,28 +148,31 @@
         }
     },
     "installed_plugins": {
-        "de.appplant.cordova.plugin.printer": {
-            "PACKAGE_NAME": "com.swsconsultancy.app"
-        },
         "org.apache.cordova.battery-status": {
-            "PACKAGE_NAME": "com.swsconsultancy.app"
-        },
-        "org.apache.cordova.camera": {
             "PACKAGE_NAME": "com.swsconsultancy.app"
         },
         "org.apache.cordova.console": {
             "PACKAGE_NAME": "com.swsconsultancy.app"
         },
-        "org.apache.cordova.dialogs": {
-            "PACKAGE_NAME": "com.swsconsultancy.app"
-        },
         "org.apache.cordova.network-information": {
             "PACKAGE_NAME": "com.swsconsultancy.app"
         },
-        "org.apache.cordova.statusbar": {
+        "org.apache.cordova.vibration": {
             "PACKAGE_NAME": "com.swsconsultancy.app"
         },
-        "org.apache.cordova.vibration": {
+        "org.apache.cordova.inappbrowser": {
+            "PACKAGE_NAME": "com.swsconsultancy.app"
+        },
+        "cordova-plugin-camera": {
+            "PACKAGE_NAME": "com.swsconsultancy.app"
+        },
+        "cordova-plugin-statusbar": {
+            "PACKAGE_NAME": "com.swsconsultancy.app"
+        },
+        "cordova-plugin-dialogs": {
+            "PACKAGE_NAME": "com.swsconsultancy.app"
+        },
+        "de.appplant.cordova.plugin.printer": {
             "PACKAGE_NAME": "com.swsconsultancy.app"
         }
     },

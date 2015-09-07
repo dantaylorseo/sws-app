@@ -4,18 +4,49 @@
             <label for="clientID" class="col-sm-2 control-label">Client Name</label>
             <div class="col-sm-4">
                 <select class="form-control" id="clientID" name="reportClient">
-                    <option disabled selected>Select Client</option>
+                    <option disabled selected value="-1">Select Client</option>
                 </select>
             </div>
             <label for="exampleInputPassword1" class="col-sm-2 control-label">Contract Number</label>
             <div class="col-sm-4">
-                <input type="text" class="form-control" id="clientContract" name="reportContract" placeholder="Contract Number">
+                <!--<input type="text" class="form-control" id="clientContract" name="reportContract" placeholder="Contract Number">-->
+                <select class="form-control" id="clientContract" name="reportContract">
+                    <option disabled selected value="-1">Select Client First</option>
+                </select>
             </div>
         </div>
         <div class="form-group">
-            <label for="exampleInputPassword1" class="col-sm-2 control-label">Workplace</label>
+            <label for="exampleInputPassword1" class="col-sm-2 control-label">Location</label>
             <div class="col-sm-4">
                 <input type="text" class="form-control" id="clientWork" name="reportWork" placeholder="Workplace">
+            </div>
+            <div class="col-sm-3 text-center">
+            	<label for="exampleInputPassword1" class="control-label">Previous report available?</label>
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-default">
+                        <input type="radio" id="" name="clientPrevAvail" value="1" /> Yes
+                    </label> 
+                    <label class="btn btn-default">
+                        <input type="radio" id="" name="clientPrevAvail" value="2" /> No
+                    </label> 
+                    <label class="btn btn-default">
+                        <input type="radio" id="" name="clientPrevAvail" value="3" /> n/a
+                    </label> 
+                </div>
+            </div>
+            <div class="col-sm-3 text-center">
+            	<label for="exampleInputPassword1" class="control-label">Previous report actioned?</label>
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-default">
+                        <input type="radio" id="" name="clientPrevAction" value="1" /> Yes
+                    </label> 
+                    <label class="btn btn-default">
+                        <input type="radio" id="" name="clientPrevAction" value="2" /> No
+                    </label> 
+                    <label class="btn btn-default">
+                        <input type="radio" id="" name="clientPrevAction" value="3" /> n/a
+                    </label> 
+                </div>
             </div>
         </div>
         <div class="form-group">
@@ -28,6 +59,12 @@
                 <input type="text" class="form-control" id="time" name="reportTime" placeholder="Arrival Time">
             </div>
         </div>
+        <div class="form-group">
+        	<div class="col-sm-12">
+        		<button type="button" class="btn btn-primary newrep_nextstep">Next Step</button>
+            </div>
+        </div>
+        <div class="hidden step2">
         <div class="well well-lg clearfix tickboxes">
             <div class="inner">
                 <div class="checkbox">
@@ -112,7 +149,7 @@
                 <div class="checkbox">
                     <label>
                         <input type="hidden" id="inlineCheckbox14" name="inlineCheckbox[14]" value="0"><span class="totalBox totalBox14">0</span> 
-                        <button disabled type="button" class="btn btn-warning btn-xs addObsButton" rel="14">Add</button>14.
+                        <button type="button" class="btn btn-success btn-xs addObsButton" rel="14">Add</button>14.
                     </label>
                 </div>
                 <div class="checkbox">
@@ -166,7 +203,7 @@
                 <div class="checkbox">
                     <label>
                         <input type="hidden" id="inlineCheckbox23" name="inlineCheckbox[23]" value="0"><span class="totalBox totalBox23">0</span> 
-                        <button type="button" class="btn needsclick btn-warning btn-xs addObsButton" disabled rel="23">Add</button>23.
+                        <button type="button" class="btn needsclick btn-success btn-xs addObsButton" rel="23">Add</button>23.
                     </label>
                 </div>
                 <div class="checkbox">
@@ -220,7 +257,7 @@
                 <div class="checkbox">
                     <label>
                         <input type="hidden" id="inlineCheckbox32" name="inlineCheckbox[32]" value="0"><span class="totalBox totalBox32">0</span> 
-                        <button type="button" class="btn needsclick btn-warning btn-xs addObsButton" disabled rel="32">Add</button>32.
+                        <button type="button" class="btn needsclick btn-success btn-xs addObsButton" rel="32">Add</button>32. Temporary Works
                     </label>
                 </div>
                 <div class="checkbox">
@@ -237,7 +274,7 @@
         <table role="table" class="table table-bordered swstable">
             <tr>
                 <th class="col-sm-1 col-md-1">Item</th>
-                <th class="col-sm-7 col-md-7">Observations &amp; Recomendations</th>
+                <th class="col-sm-7 col-md-7">Observations &amp; Recommendations</th>
                 <th class="col-sm-2 col-md-2">Prority Category</th>
                 <th class="col-sm-1 col-md-1"><span class="glyphicon glyphicon-camera"></span></th>
                 <th class="col-sm-1 col-md-1"><span class="glyphicon glyphicon-pencil"></span></th>
@@ -248,5 +285,7 @@
             </tr>
         </table>
         <button type="button" class="btn btn-success subreport needsclick">Submit &amp; Sign Form</button>
+        </div>
     </form>
+    
 </div>

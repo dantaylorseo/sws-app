@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>40239AE0-8D9D-40A5-9BF7-4EF02BE73298</string>
 	<key>IDESourceControlProjectName</key>
-	<string>project</string>
+	<string>SWSApp</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>A5F340CAB5AD6E876E176765402324B518FF51D5</key>
 		<string>github.com:dantaylorseo/sws-app.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>platforms/ios/SWSApp.xcodeproj/project.xcworkspace</string>
+	<string>platforms/ios/SWSApp.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>A5F340CAB5AD6E876E176765402324B518FF51D5</key>

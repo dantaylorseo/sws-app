@@ -18,21 +18,14 @@ background: linear-gradient(to bottom,  rgba(232,232,232,0.65) 0%,rgba(0,0,0,0) 
 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6e8e8e8', endColorstr='#00000000',GradientType=0 ); /* IE6-9 */
 
 }
-.dashbox {
-	height: 287px;
-  border-radius: 30px;
-  margin: 7px;
-  width: 31.9%;
-  background: rgba(209,17,17,0.5);
-  padding: 20px;
-}
 .dashbox h1 {
 	color: #fff;
 	font-size: 205%;
 	text-transform: uppercase;
 }
 .dash-logo {
-	background-color: #000;
+	padding-top: 200px;
+	text-align:center;
 }
 .footer {
     position: fixed;
@@ -114,7 +107,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6e8e8e8', e
 }
 .navbar-fixed-bottom  ul.navbar-nav li {
     display: inline-block;
-    width:20%;
+    /*width: 20%; */ 
+	width:16.66%;
 }
 .navbar-inverse ul.navbar-nav>li>a {
     font-size: 10px;
@@ -199,4 +193,52 @@ ul.dropdown-menu li.input {
 }
 .priority_D {
     background-color: lightblue;
+}
+#dashboard-back {
+	position: absolute;		
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: #000!important;
+	padding: 50px;
+}
+.badge {
+	padding: 6px 7px;
+	border-radius: 100px;
+	margin-top: 25px;
+	background-color:#C22320;
+}
+.green-fa {
+	color:#08D300;
+}
+#sync-page {
+	margin: 50px;
+	background: #fff;
+	border-radius: 5000px;
+	padding: 50px;	
+}
+#startsync {
+	margin: 0 190px;
+}
+#sync-page .fa-circle {
+	color: #999;
+}
+#sync-page .fa-circle.fa-faded {
+	color: #333;
+	opacity: 0.7;
+}
+.btn-group .btn-default.active {
+    background-image: -webkit-linear-gradient(top, #007aff 0%, #005ec2 100%);
+    background-image: -o-linear-gradient(top, #007aff 0%, #005ec2 100%);
+    background-image: linear-gradient(to bottom, #007aff 0%, #005ec2 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FF007AFF', endColorstr='#FF005EC2', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+    background-repeat: repeat-x;
+    border-color: #0059b8;  
+    background-color: #428bca;
+    color: #fff;
+}
+.btn-group .btn-default:hover, .btn-group .btn-default:focus {
+    background-position: 0;   
 }

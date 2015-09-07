@@ -1,6 +1,0 @@
-# view AndroidManifest.xml #generated:6
--keep class com.swsconsultancy.app.CordovaApp { <init>(...); }
-
-# view AndroidManifest.xml #generated:12
--keep class de.appplant.cordova.plugin.printer.CloudPrintDialog { <init>(...); }
-
