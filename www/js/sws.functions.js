@@ -18,7 +18,7 @@ var app = {
             }
         );*/
 		
-		var obsArray = [];
+		//var obsArray = [];
 		var db = open_db();
         renderPage();
     },
@@ -106,7 +106,7 @@ function populateDB(tx) {
     
     tx.executeSql('CREATE TABLE IF NOT EXISTS obs (obsID TEXT PRIMARY KEY, obsReport TEXT, obsItem TEXT, obsObs TEXT, obsPriority TEXT, obsMedia TEXT, obsCreated TEXT DEFAULT CURRENT_TIMESTAMP, obsUpdated TEXT DEFAULT CURRENT_TIMESTAMP )');
     
-    tx.executeSql('CREATE TABLE IF NOT EXISTS report (reportID TEXT PRIMARY KEY, reportClient TEXT, reportWork TEXT, reportContract TEXT, reportDate TEXT, reportTime TEXT, reportTick TEXT, reportUser TEXT, reportClientSig TEXT, reportUserSig TEXT, reportCreated TEXT DEFAULT CURRENT_TIMESTAMP, reportUpdated TEXT DEFAULT CURRENT_TIMESTAMP )');
+    tx.executeSql('CREATE TABLE IF NOT EXISTS report (reportID TEXT PRIMARY KEY, reportClient TEXT, reportWork TEXT, reportContract TEXT, reportDate TEXT, reportTime TEXT, reportTick TEXT, reportUser TEXT, reportPrevAvail TEXT, reportPrevAction TEXT, reportClientSig TEXT, reportUserSig TEXT, reportCreated TEXT DEFAULT CURRENT_TIMESTAMP, reportUpdated TEXT DEFAULT CURRENT_TIMESTAMP )');
     
     tx.executeSql('CREATE TABLE IF NOT EXISTS user (userID TEXT PRIMARY KEY, userName TEXT, userEmail TEXT, userPass TEXT, userActive INTEGER DEFAULT "1", userType INTEGER DEFAULT "0", userCreated TEXT DEFAULT CURRENT_TIMESTAMP, userUpdated TEXT DEFAULT CURRENT_TIMESTAMP)');
 	
@@ -267,7 +267,7 @@ function renderPage() {
     var db = open_db();
     db.transaction(populateDB, errorCB, successCB);
 	var loadtest = 0;
-	var obsArray = [];
+	//var obsArray = [];
 	$("a[target='_system']").click(function(event) {
 		event.preventDefault();
 		cordova.InAppBrowser.open($(this).attr("href"), '_system');
@@ -382,7 +382,7 @@ function renderPage() {
 					reportPage();
 					loadtest++;
 				} else {
-					var obsArray = [];
+					var obsArray = {};
 					setup_report_page();
 				}
             } else if( link == 'debug.html' ) {
@@ -484,6 +484,8 @@ function reportDetail(reportID) {
                 $('#clientWork').val(rs.rows.item(0).contractLocation);
                 $('#reportDate').val(rs.rows.item(0).reportDate);
                 $('#time').val(rs.rows.item(0).reportTime);
+                $('.createpdf').attr( 'rel', rs.rows.item(0).reportID );
+                $('.printform').attr( 'rel', rs.rows.item(0).reportID );
                 //console.log(rs.rows.item(0).reportTick);
                 var ticksString = rs.rows.item(0).reportTick.replace(',}', '}');
                 var ticks = jQuery.parseJSON( ticksString );
@@ -496,7 +498,61 @@ function reportDetail(reportID) {
             }, errorCB);
         }
     );
+    $( document )
+    .on( "click", '.createpdf', function(e) {
+        var fileTransfer = new FileTransfer();
+        var report = $( this ).attr( 'rel' );
+        var uri = encodeURI("http://sws.tailoreddev.co.uk/"+report+".pdf");
+        var fileURL = cordova.file.documentsDirectory+"/"+report+".pdf";
+        
+        fileTransfer.download(
+            uri,
+            fileURL,
+            function(entry) {
+                console.log("download complete: " + entry.toURL());
+                
+                
+                
+                //cordova.InAppBrowser.open(entry.toURL(), '_blank', 'location=no');
+                window.open(entry.toURL(), '_blank', 'location=no,closebuttoncaption=Close,enableViewportScale=yes');
+            },
+            function(error) {
+                console.log("download error source " + error.source);
+                console.log("download error target " + error.target);
+                console.log("upload error code" + error.code);
+            },
+            false
+        );  
+    })
+    .on("click", ".printform", function(event) {
+        event.preventDefault();
+        //var page = $("html").html();
+        
+        var fileTransfer = new FileTransfer();
+        var report = $( this ).attr( 'rel' );
+        var uri = encodeURI("http://sws.tailoreddev.co.uk/"+report+".pdf");
+        var fileURL = cordova.file.documentsDirectory+"/"+report+".pdf";
+        
+        fileTransfer.download(
+            uri,
+            fileURL,
+            function(entry) {
+                console.log("download complete: " + entry.toURL());
+                console.log('In print');
+                cordova.plugins.printer.print(entry.toURL(), {name: 'Report Detail', greyscale: true }, function () {
+                    console.log('printing finished or canceled')
+                });
+            },
+            function(error) {
+                console.log("download error source " + error.source);
+                console.log("download error target " + error.target);
+                console.log("upload error code" + error.code);
+            },
+            false
+        );  
     
+        
+    });
     var obsQuery = 'SELECT *, COUNT( imageID ) as images FROM obs LEFT JOIN image ON imageObs = obsID WHERE obsReport="'+reportID+'" ORDER BY obsItem ASC';
     console.log( obsQuery );
     db.transaction(
@@ -554,7 +610,7 @@ function setup_report_page() {
 
 function reportPage() {
     var db = open_db();
-	var obsArray = [];
+	var obsArray = {};
 	var totalObs = 0;
     
 	setup_report_page();
@@ -571,6 +627,7 @@ function reportPage() {
         event.preventDefault();
         sigCapture.clear();
     })
+    
 	.on( "change", "#reportform #clientID", function() {
 		var clientID = $(this).val();
 		var clientQ = "SELECT * FROM contract WHERE contractClient='"+clientID+"' ORDER BY contractNumber ASC";
@@ -629,11 +686,32 @@ function reportPage() {
 	})
     .on("click", ".printform", function(event) {
         event.preventDefault();
-        var page = $("#ajaxdata").html();
-        console.log('In print');
-        cordova.plugins.printer.print(page, {name: 'Report Detail', greyscale: true }, function () {
-            console.log('printing finished or canceled')
-        });
+        //var page = $("html").html();
+        
+        var fileTransfer = new FileTransfer();
+        var report = $( this ).attr( 'rel' );
+        var uri = encodeURI("http://sws.tailoreddev.co.uk/"+report+".pdf");
+        var fileURL = cordova.file.documentsDirectory+"/"+report+".pdf";
+        
+        fileTransfer.download(
+            uri,
+            fileURL,
+            function(entry) {
+                console.log("download complete: " + entry.toURL());
+                console.log('In print');
+                cordova.plugins.printer.print(page, {name: 'Report Detail', greyscale: true }, function () {
+                    console.log('printing finished or canceled')
+                });
+            },
+            function(error) {
+                console.log("download error source " + error.source);
+                console.log("download error target " + error.target);
+                console.log("upload error code" + error.code);
+            },
+            false
+        );  
+    
+        
     })
     .on("click", ".addsig", function(event) {
         event.preventDefault();
@@ -651,7 +729,7 @@ function reportPage() {
             db.transaction(
                 function(tx) {
                     tx.executeSql(query, [fields.sig, fields.report], function(tx, rs) {
-                        console.log("updated:" + fields.report);
+                        //console.log("updated:" + fields.report);
                         var title = $('a.dashboard').attr('title');
                         $("#main").load('dashboard.html', function() {
                            $('.navbar-fixed-top .navbar-brand').html(title);
@@ -692,9 +770,10 @@ function reportPage() {
             $.each($(this).serializeArray(), function() {
                 result[this.name] = this.value;
             });
+            console.log( result );
             var ticked = '{';
             for (var i = 1; i <= 33; i++) {
-                if(i == 33) {
+                if(i === 33) {
                     ticked += '"' + i + '":"' + result["inlineCheckbox[" + i + "]"] + '"';
                 } else {
                     ticked += '"' + i + '":"' + result["inlineCheckbox[" + i + "]"] + '",';
@@ -702,18 +781,18 @@ function reportPage() {
             }
             ticked += '}';
             var reportID = generateUUID();
-            var query = "INSERT INTO report (reportID, reportClient, reportWork, reportContract, reportDate, reportTime, reportTick, reportUser) VALUES (?,?,?,?,?,?,?,?)";
+            var query = "INSERT INTO report (reportID, reportClient, reportWork, reportContract, reportDate, reportTime, reportTick, reportUser, reportPrevAvail, reportPrevAction ) VALUES (?,?,?,?,?,?,?,?,?,?)";
             db.transaction(
                 function(tx) {
 					var reportDate = result.reportDate.replace( /(\d{2})\/(\d{2})\/(\d{4})/, "$3/$2/$1") ;
 					console.log( reportDate );
-                    tx.executeSql(query, [reportID, result.reportClient, result.reportWork, result.reportContract, reportDate, result.reportTime, ticked, window.localStorage.userID], function(tx, rs) {
+                    tx.executeSql(query, [reportID, result.reportClient, result.reportWork, result.reportContract, reportDate, result.reportTime, ticked, window.localStorage.userID, result.clientPrevAvail, result.clientPrevAction ], function(tx, rs) {
                         
                         
 						//var obsID = $('.obsID').val();
 						
                         $.each(obsArray, function() { 
-							console.log(this);
+							//console.log(this);
 							var obsID = this.obsID;
 							var obsQuery = "INSERT INTO obs (obsReport, obsID, obsItem, obsObs, obsPriority) VALUES ('"+reportID+"','"+obsID+"','"+this.obsItem+"','"+this.obsObs+"','"+this.obsPriority+"')";
 							//console.log( this.obsImage.length );
@@ -745,7 +824,7 @@ function reportPage() {
                         });
                         
 						if( online === 1 ) { 
-							ajax_insert_report( reportID, result.reportClient, result.reportWork, result.reportContract, reportDate, result.reportTime, ticked, window.localStorage.userID );
+							ajax_insert_report( reportID, result.reportClient, result.reportWork, result.reportContract, reportDate, result.reportTime, ticked, window.localStorage.userID, result.clientPrevAvail, result.clientPrevAction );
 						}
 						
                         console.log("inserted report:"+reportID);
@@ -783,12 +862,13 @@ function reportPage() {
         .on("submit", "#newObs", function(e) {
             e.preventDefault();
             $(".nodata").remove();
-            var result = [];
+            var result = {};
 			result.images = [];
             var error = 0;
             $.each($(this).serializeArray(), function() {
-                if( this.name === 'obsImage' ) {
+                if( this.name === 'obsImage[]' ) {
 					result.images.push( this.value );
+                    //console.log(this.value);
 				} else {
 					result[this.name] = this.value;
 				}
@@ -804,16 +884,16 @@ function reportPage() {
             if( error == 0 ) {
 				var obsID = result.obsID;
 				if( typeof obsArray === 'undefined' ) {
-					obsArray = [];
+					obsArray = {};
                     //obsArray[obsID] = [];
 				}
-                //obsArray[obsID] = [];
-                obsArray.push( result );
+                obsArray[obsID] = {};
+                obsArray[obsID] = result;
                 //obsArray[obsID].push(result);
-				console.log(obsArray[obsID]);
+				//console.log(obsArray[obsID]);
                 var priorityClass = result.obsPriority.split(" ");
                 priorityClass = 'priority_'+priorityClass[0];
-                var output = '<tr><td>' + result.obsItem + '</td><td>' + result.obsObs + '</td><td class="'+priorityClass+'">' + result.obsPriority + '</td><td>' + result.obsImages + '</td><td><button type="button" rel="'+totalObs+'" class="btn btn-primary btn-xs editObs"><span class="glyphicon glyphicon-pencil"></span></button> <button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button></td></tr>';
+                var output = '<tr id='+obsID+'><td>' + result.obsItem + '</td><td>' + result.obsObs + '</td><td class="'+priorityClass+'">' + result.obsPriority + '</td><td>' + result.obsImages + '</td><td><button type="button" rel="'+obsID+'" class="btn btn-primary btn-xs editObs"><span class="glyphicon glyphicon-pencil"></span></button> <button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button></td></tr>';
                 $('.swstable').append(output);
                 var curr = $('.totalBox' + result.obsItem).html();
                 $('.totalBox' + result.obsItem).html(+curr + 1).css('background-color', 'red');
@@ -829,13 +909,72 @@ function reportPage() {
                 //console.log('end');
             }
             $('.addobssub').removeAttr('disabled');
-			console.log(obsArray);
+			//console.log(obsArray);
         })
         .on( "click" , ".editObs", function(e) {
             e.preventDefault();
             var editObs = $(this);
-            var obsKey = parseInt(editObs.attr('rel'));
-            console.log( obsArray[obsKey] );  
+            var obsKey = editObs.attr('rel');
+            var obs = obsArray[obsKey];
+            //console.log( obsArray[obsKey] ); 
+            $('#editobsItem').val(obs.obsItem);
+            $('#editobsName').val(obs.obsName);
+            $('#editobsPriority').val(obs.obsPriority);
+            $('#editobsObs').text(obs.obsObs);
+            $('#editobsID').val( obs.obsID );
+            $.each( obs.images, function( i, image ) {
+               //console.log( image );
+               $("#editmedia").append('<div class="col-sm-2"><a href="#" class="removemedia"><span class="glyphicon glyphicon-remove"></span></a><img src="' + image + '" /></div><input type="hidden" name="editobsImage[]" value="data:image/jpeg;base64,' + image + '" />');
+            });
+            $(".editobs").modal("show"); 
+        })
+        .on("click", ".editobssub", function(e) {
+            $(this).attr('disabled','disabled');
+            $('#editObs').submit();
+        })
+        .on("submit", "#editObs", function(e) {
+            e.preventDefault();
+            var result = {};
+			result.images = [];
+            var error = 0;
+            $.each($(this).serializeArray(), function() {
+                if( this.name === 'editobsImage[]' ) {
+					result.images.push( this.value );
+                    //console.log(this.value);
+				} else {
+                    var key = this.name.replace( 'edit', '' );
+					result[key] = this.value;
+				}
+            });
+            //console.log( result );
+            if (typeof result.obsPriority === 'undefined') {
+                //alert("Please select a priority");
+                error++;
+            } 
+            if (result.obsObs == "") {
+                //alert("Please enter an observation");
+                error++;
+            } 
+            if( error == 0 ) {
+				var obsID = result.obsID;
+                obsArray[obsID] = {};
+                obsArray[obsID] = result;
+                //obsArray[obsID].push(result);
+				console.log(obsArray[obsID]);
+                var priorityClass = result.obsPriority.split(" ");
+                priorityClass = 'priority_'+priorityClass[0];
+                var output = '<tr id="'+obsID+'"><td>' + result.obsItem + '</td><td>' + result.obsObs + '</td><td class="'+priorityClass+'">' + result.obsPriority + '</td><td>' + result.obsImages + '</td><td><button type="button" rel="'+obsID+'" class="btn btn-primary btn-xs editObs"><span class="glyphicon glyphicon-pencil"></span></button> <button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button></td></tr>';
+                
+                $('.swstable tr#'+obsID).replaceWith(output);
+                $(".editobs").modal("hide"); 
+				$('#editObs').trigger("reset");
+                $("#newObs .obsImages").val('0');
+                $('.media div').remove();
+                
+                //console.log('end');
+            }
+            $('.editobssub').removeAttr('disabled');
+			console.log(obsArray);
         })
         .on("click", ".addmedia", function(e) {
             e.preventDefault();
@@ -872,7 +1011,7 @@ function reportPage() {
 		}, 'json' );
 	}
 	
-	function ajax_insert_report( reportID, reportClient, reportWork, reportContract, reportDate, reportTime, reportTick, reportUser ) {
+	function ajax_insert_report( reportID, reportClient, reportWork, reportContract, reportDate, reportTime, reportTick, reportUser, reportAction, reportAvail ) {
 		
 		var data = {
 			reportID : reportID,
@@ -882,7 +1021,9 @@ function reportPage() {
 			reportDate : reportDate,
 			reportTime : reportTime,
 			reportTick : reportTick,
-			reportUser : reportUser
+			reportUser : reportUser,
+            reportPrevAvail: reportAvail,
+            reportPrevAction: reportAction
 		};
 		//console.log ( data );
 		$.post( 'http://sws.tailoreddev.co.uk/ajax/add-report.php', data, function( data ) {
@@ -904,7 +1045,8 @@ function reportPage() {
 
     function onSuccess(imageData) {
         var i = $("#newObs .obsImages").val();
-        $(".media").append('<div class="col-sm-2"><a href="#" class="removemedia"><span class="glyphicon glyphicon-remove"></span></a><img src="data:image/jpeg;base64,' + imageData + '" /></div><input type="hidden" name="obsImage" value="data:image/jpeg;base64,' + imageData + '" />');
+        $(".media").append('<div class="col-sm-2"><a href="#" class="removemedia"><span class="glyphicon glyphicon-remove"></span></a><img src="data:image/jpeg;base64,' + imageData + '" /></div><input type="hidden" name="obsImage[]" value="data:image/jpeg;base64,' + imageData + '" />');
+        //$(".media").append('<div class="col-sm-2"><a href="#" class="removemedia"><span class="glyphicon glyphicon-remove"></span></a><img src="data:image/jpeg;base64,IMAGE DATA HERE" /></div><input type="hidden" name="obsImage[]" value="data:image/jpeg;base64,IMAGE DATA HERE" />');
         i = +i + 1;
         $("#newObs .obsImages").val(i);
     }
