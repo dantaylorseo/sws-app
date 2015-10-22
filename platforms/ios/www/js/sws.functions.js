@@ -130,7 +130,7 @@ function get_users() {
 	$('.users-sync .rem-icon').remove();
 	// TODO: Add a check on last updated column
 	$('.users-sync').append( '<i class="fa fa-circle rem-icon fa-stack-2x"></i><i class="fa fa-circle-o-notch rem-icon fa-spin fa-stack-1x fa-inverse"></i>' );
-	$.get( 'http://sws.tailoreddev.co.uk/ajax/get-users.php', function( data ) {
+	$.get( 'http://sws.tailoreddev.co.uk/ajax/get-users.php', { "_": $.now() }, function( data ) {
 		var db = open_db();
 		$.each( data, function ( i, item ) {
 			
@@ -152,7 +152,7 @@ function get_clients() {
 	$('.clients-sync').append( '<i class="fa fa-circle rem-icon fa-stack-2x"></i><i class="fa fa-circle-o-notch rem-icon fa-spin fa-stack-1x fa-inverse"></i>' );
 	// TODO: Add a check on last updated column
 	console.log( 'getting clients...');
-	$.get( 'http://sws.tailoreddev.co.uk/ajax/get-clients.php', function( data ) {
+	$.get( 'http://sws.tailoreddev.co.uk/ajax/get-clients.php', { "_": $.now() }, function( data ) {
 		var db = open_db();
 		$.each( data, function ( i, item ) {
 			
@@ -166,7 +166,9 @@ function get_clients() {
 		});
 		$('.clients-sync .rem-icon').remove();
 		$('.clients-sync').append( '<i class="fa fa-circle rem-icon fa-faded fa-stack-2x"></i><i class="fa rem-icon fa-check green-fa fa-stack-1x fa-inverse"></i>' );
-	}, 'json' );
+	}, 'json' ).fail(function() {
+    alert( "error" );
+  });
 }
 
 function get_reports() {
@@ -174,7 +176,7 @@ function get_reports() {
 	$('.reports-sync').append( '<i class="fa fa-circle rem-icon fa-stack-2x"></i><i class="fa fa-circle-o-notch rem-icon fa-spin fa-stack-1x fa-inverse"></i>' );
 	// TODO: Add a check on last updated column
 	console.log( 'getting reports...');
-	$.get( 'http://sws.tailoreddev.co.uk/ajax/get-reports.php', function( data ) {
+	$.get( 'http://sws.tailoreddev.co.uk/ajax/get-reports.php', { "_": $.now() }, function( data ) {
 		var db = open_db();
 		$.each( data, function ( i, item ) {
 			
@@ -187,7 +189,7 @@ function get_reports() {
 			);
 		});
 		console.log( 'getting obs...');
-	$.get( 'http://sws.tailoreddev.co.uk/ajax/get-obs.php', function( data ) {
+	$.get( 'http://sws.tailoreddev.co.uk/ajax/get-obs.php', { "_": $.now() }, function( data ) {
 		var db = open_db();
 		$.each( data, function ( i, item ) {
 			console.log('in');
@@ -202,7 +204,10 @@ function get_reports() {
 	}, 'json' );
 		$('.reports-sync .rem-icon').remove();
 		$('.reports-sync').append( '<i class="fa fa-circle fa-faded rem-icon fa-stack-2x"></i><i class="fa rem-icon fa-check green-fa fa-stack-1x fa-inverse"></i>' );
-	}, 'json' );
+	}, 'json' ).fail(function(xhr, ajaxOptions, thrownError) {
+    alert(xhr.status);
+        alert(thrownError);
+  });
 }
 
 
@@ -210,7 +215,7 @@ function get_contracts() {
 	
 	// TODO: Add a check on last updated column
 	console.log( 'getting contracts...');
-	$.get( 'http://sws.tailoreddev.co.uk/ajax/get-contracts.php', function( data ) {
+	$.get( 'http://sws.tailoreddev.co.uk/ajax/get-contracts.php', { "_": $.now() }, function( data ) {
 		var db = open_db();
 		$.each( data, function ( i, item ) {
 			
@@ -979,7 +984,11 @@ function reportPage() {
         .on("click", ".addmedia", function(e) {
             e.preventDefault();
             navigator.camera.getPicture(onSuccess, onFail, {
-                destinationType: Camera.DestinationType.DATA_URL
+                destinationType: Camera.DestinationType.DATA_URL,
+                quality: 30,
+                targetWidth: 800,
+                targetHeight: 600,
+                correctOrientation : true
             });
         })
         .on("click", ".addmedialib", function(e) {
