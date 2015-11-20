@@ -805,7 +805,6 @@ function reportPage() {
             $.each($(this).serializeArray(), function () {
                 result[this.name] = this.value;
             });
-            console.log(result);
             var ticked = '{';
             for (var i = 1; i <= 33; i++) {
                 if (i === 33) {
@@ -820,7 +819,6 @@ function reportPage() {
             db.transaction(
                 function (tx) {
                     var reportDate = result.reportDate.replace(/(\d{2})\/(\d{2})\/(\d{4})/, "$3/$2/$1");
-                    console.log(reportDate);
                     tx.executeSql(query, [reportID, result.reportClient, result.reportWork, result.reportContract, reportDate, result.reportTime, ticked, window.localStorage.userID, result.clientPrevAvail, result.clientPrevAction], function (tx, rs) {
 
 
@@ -886,8 +884,12 @@ function reportPage() {
             $("#newObs .obsImages").val('0');
             $('.media div').remove();
             $('#newObs .obsPriority').val('null');
-
-            $(".newobs").modal("show");
+            $('.newobs').modal({
+                backdrop: 'static',
+                keyboard: false,
+                show: true
+            });
+            //$(".newobs").modal("show");
             $('.addobssub').removeAttr('disabled');
         })
         .on("click", ".addobssub", function (e) {
@@ -908,7 +910,7 @@ function reportPage() {
                     result[this.name] = this.value;
                 }
             });
-            if (typeof result.obsPriority === 'undefined') {
+            if ( result.obsPriority === 'null' ) {
                 //alert("Please select a priority");
                 error++;
             }
@@ -928,7 +930,7 @@ function reportPage() {
                 //console.log(obsArray[obsID]);
                 var priorityClass = result.obsPriority.split(" ");
                 priorityClass = 'priority_' + priorityClass[0];
-                var output = '<tr id=' + obsID + '><td>' + result.obsItem + '</td><td>' + result.obsObs + '</td><td class="' + priorityClass + '">' + result.obsPriority + '</td><td>' + result.obsImages + '</td><td><button type="button" rel="' + obsID + '" class="btn btn-primary btn-xs editObs"><span class="glyphicon glyphicon-pencil"></span></button> <button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button></td></tr>';
+                var output = '<tr id=' + obsID + '><td>' + result.obsItem + '</td><td>' + result.obsObs + '</td><td class="' + priorityClass + '">' + result.obsPriority + '</td><td>' + result.obsImages + '</td><td><button type="button" rel="' + obsID + '" class="btn btn-primary btn-xs editObs"><span class="glyphicon glyphicon-pencil"></span></button> <button type="button" rel="' + obsID + '" data-item="' + result.obsItem + '" class="btn btn-danger btn-xs delObs"><span class="glyphicon glyphicon-trash"></span></button></td></tr>';
                 $('.swstable').append(output);
                 var curr = $('.totalBox' + result.obsItem).html();
                 $('.totalBox' + result.obsItem).html(+curr + 1).css('background-color', 'red');
@@ -946,6 +948,31 @@ function reportPage() {
             $('.addobssub').removeAttr('disabled');
             //console.log(obsArray);
         })
+        .on( 'click', '.delObs', function(e) {
+            var delObs = $(this);
+            var obsKey = delObs.attr('rel');
+            var obsItem = delObs.data( 'item' );
+            navigator.notification.confirm(
+                'Are you sure, this is non-reversible.', 
+                 function( buttonIndex) {
+                     if( buttonIndex == 1 ) {
+                        console.log( 'Deleting ' + obsItem );
+                        $( 'tr#'+obsKey ).remove();
+                        delete obsArray[obsKey]; 
+                        var curr = $('.totalBox' + obsItem).html();
+                        $('.totalBox' + obsItem).html(+curr - 1);
+                        if( $( '.totalbox'+ obsItem ).html() == 0 ) {
+                            $(this).css('background-color', 'black')
+                        }
+                        $('#inlineCheckbox' + obsItem).val(+curr - 1);
+                        console.log( 'Deleted ' + obsKey );
+                     }
+                 },            
+                'Confirm',     
+                ['Yes','No']    
+            );   
+            e.preventDefault();                
+        })
         .on("click", ".editObs", function (e) {
             e.preventDefault();
             var editObs = $(this);
@@ -961,7 +988,12 @@ function reportPage() {
                 //console.log( image );
                 $("#editmedia").append('<div class="col-sm-2"><a href="#" class="removemedia"><span class="glyphicon glyphicon-remove"></span></a><img src="' + image + '" /></div><input type="hidden" name="editobsImage[]" value="data:image/jpeg;base64,' + image + '" />');
             });
-            $(".editobs").modal("show");
+            $('.editobs').modal({
+                backdrop: 'static',
+                keyboard: false,
+                show: true
+            });
+            //$(".editobs").modal("show");
         })
         .on("click", ".editobssub", function (e) {
             $(this).attr('disabled', 'disabled');

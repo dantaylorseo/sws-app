@@ -18,8 +18,6 @@
     <string>com.swsconsultancy.app</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
-    <key>UIRequiresFullScreen</key>
-    <true/>
     <key>CFBundleName</key>
     <string>${PRODUCT_NAME}</string>
     <key>CFBundlePackageType</key>
@@ -47,12 +45,14 @@
     <array>
       <string>UIInterfaceOrientationLandscapeLeft</string>
     </array>
-    <key>UISupportedInterfaceOrientations~ipad</key>
+    <key>UIRequiresFullScreen</key>
+    <true/>
+    <key>UISupportedInterfaceOrientations</key>
     <array>
       <string>UIInterfaceOrientationLandscapeLeft</string>
       <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
-    <key>UISupportedInterfaceOrientations</key>
+    <key>UISupportedInterfaceOrientations~ipad</key>
     <array>
       <string>UIInterfaceOrientationLandscapeLeft</string>
       <string>UIInterfaceOrientationLandscapeRight</string>

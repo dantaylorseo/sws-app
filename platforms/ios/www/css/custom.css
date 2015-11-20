@@ -125,6 +125,12 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6e8e8e8', e
 .navbar>.container .navbar-brand {
     font-size: 26px;
     text-transform: uppercase;
+    float: none;
+}
+.topbarhome, .topbarhome:active, .topbarhome.active, .topbarhome:focus {
+    font-size: 26px;
+    color: #fff;
+    margin-right: 30px;
 }
 .navbar-default .navbar-brand {
     color: #fff;
