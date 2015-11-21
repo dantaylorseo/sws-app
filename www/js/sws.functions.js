@@ -291,6 +291,7 @@ function renderPage() {
     }
     */
     var db = open_db();
+    var page;
     db.transaction(populateDB, errorCB, successCB);
     var loadtest = 0;
     //var obsArray = [];
@@ -298,9 +299,10 @@ function renderPage() {
         event.preventDefault();
         cordova.InAppBrowser.open($(this).attr("href"), '_system');
     });
+    
     $(document)
         .ready(function (e) {
-
+            sigCapture = new SignatureCapture("signature");
             $("#ajaxdata").remove();
 
             /*get_users();
@@ -342,6 +344,10 @@ function renderPage() {
             get_reports();
             get_contracts();
         })
+        .on("click", ".clearsig", function (event) {
+            event.preventDefault();
+            sigCapture.clear();
+        })
         .on("click", ".logout", function (event) {
             event.preventDefault();
             navigator.notification.confirm(
@@ -370,11 +376,35 @@ function renderPage() {
 
             login(user, pass);
         })
+        .on("click", ".topbarhome", function(e) {
+            e.preventDefault();
+        
+            var thislink = $(this);
+            var link = thislink.attr('href');
+            var title = thislink.attr('title');
+        
+            if( page == 'new-report' ) {
+                navigator.notification.confirm(
+                    'Are you sure, this report will be lost?', 
+                     function( buttonIndex) {
+                         if( buttonIndex == 1 ) {
+                            $("#ajaxdata").remove();
+                            $("#main").load( link );
+                         } 
+                     },            
+                    'You Will Lose Data!',     
+                    ['Go Home','Stay Here']    
+                ); 
+            } else {
+                $("#ajaxdata").remove();
+                $("#main").load( link );
+            }
+        })
         .on("click", ".innerlink", function (e) {
             e.preventDefault();
 
             var thislink = $(this);
-
+            page = thislink.data('loc');
             var link = $(this).attr('href');
             //alert( window.location.pathname );
             $('.innerlink').removeClass('active');
@@ -640,6 +670,7 @@ function setup_report_page() {
 
     $('#time').val(h + ':' + m);
     sigCapture = null;
+    sigCapture = new SignatureCapture("signature");
 }
 
 function reportPage() {
@@ -649,7 +680,7 @@ function reportPage() {
 
     setup_report_page();
 
-
+    sigCapture = new SignatureCapture("signature");
     $(document).ready(function (e) {
 
         sigCapture = new SignatureCapture("signature");
@@ -661,7 +692,7 @@ function reportPage() {
         event.preventDefault();
         sigCapture.clear();
     })
-
+    
     .on("change", "#reportform #clientID", function () {
             var clientID = $(this).val();
             var clientQ = "SELECT * FROM contract WHERE contractClient='" + clientID + "' ORDER BY contractNumber ASC";
@@ -753,13 +784,10 @@ function reportPage() {
         .on("click", ".addsig", function (event) {
             event.preventDefault();
 
-            var fields = {
-                'sig': 'data:image/png; base64,' + sigCapture.toString(),
-                'report': $('.sigReportID').val(),
-            };
+            
             if (document.getElementById('signature').toDataURL() !== document.getElementById('blank').toDataURL()) {
                 $('.signature1').modal('hide');
-                var query = "UPDATE report SET reportClientSig=? WHERE reportID=?";
+                /*var query = "UPDATE report SET reportClientSig=? WHERE reportID=?";
                 //console.log( query );
                 //console.log (fields );
                 // Add signature image to database
@@ -780,6 +808,8 @@ function reportPage() {
                         }, errorCB);
                     }, errorCB
                 );
+                */
+                $('#reportform').submit();
                 $('.sigimg').attr('src', 'data:image/png; base64,' + sigCapture.toString());
                 sigCapture.clear();
             } else {
@@ -796,15 +826,21 @@ function reportPage() {
     .on("click", '.subreport', function (e) {
             e.preventDefault();
             $(this).attr('disabled', 'disabled');
-            $('#reportform').submit();
+            var reportID = generateUUID();
+            $(".sigReportID").val(reportID);
+            $('.signature1').modal('show');
+            
+            //$('#reportform').submit();
         })
         .on("submit", "#reportform", function (event) {
             event.preventDefault();
-
             var result = {};
             $.each($(this).serializeArray(), function () {
                 result[this.name] = this.value;
             });
+            result.sig = 'data:image/png; base64,'; //+ sigCapture.toString();
+            result.report = $('.sigReportID').val();
+            
             var ticked = '{';
             for (var i = 1; i <= 33; i++) {
                 if (i === 33) {
@@ -814,12 +850,12 @@ function reportPage() {
                 }
             }
             ticked += '}';
-            var reportID = generateUUID();
-            var query = "INSERT INTO report (reportID, reportClient, reportWork, reportContract, reportDate, reportTime, reportTick, reportUser, reportPrevAvail, reportPrevAction ) VALUES (?,?,?,?,?,?,?,?,?,?)";
+            
+            var query = "INSERT INTO report (reportID, reportClient, reportWork, reportContract, reportDate, reportTime, reportTick, reportUser, reportPrevAvail, reportPrevAction, reportClientSig ) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
             db.transaction(
                 function (tx) {
                     var reportDate = result.reportDate.replace(/(\d{2})\/(\d{2})\/(\d{4})/, "$3/$2/$1");
-                    tx.executeSql(query, [reportID, result.reportClient, result.reportWork, result.reportContract, reportDate, result.reportTime, ticked, window.localStorage.userID, result.clientPrevAvail, result.clientPrevAction], function (tx, rs) {
+                    tx.executeSql(query, [result.report, result.reportClient, result.reportWork, result.reportContract, reportDate, result.reportTime, ticked, window.localStorage.userID, result.clientPrevAvail, result.clientPrevAction, result.sig], function (tx, rs) {
 
 
                         //var obsID = $('.obsID').val();
@@ -827,7 +863,7 @@ function reportPage() {
                         $.each(obsArray, function () {
                             //console.log(this);
                             var obsID = this.obsID;
-                            var obsQuery = "INSERT INTO obs (obsReport, obsID, obsItem, obsObs, obsPriority) VALUES ('" + reportID + "','" + obsID + "','" + this.obsItem + "','" + this.obsObs + "','" + this.obsPriority + "')";
+                            var obsQuery = "INSERT INTO obs (obsReport, obsID, obsItem, obsObs, obsPriority) VALUES ('" + result.report + "','" + obsID + "','" + this.obsItem + "','" + this.obsObs + "','" + this.obsPriority + "')";
                             //console.log( this.obsImage.length );
                             $.each(this.images, function () {
                                 var imageID = generateUUID();
@@ -849,7 +885,7 @@ function reportPage() {
 
                             tx.executeSql(obsQuery, [], function (tx, rs) {
                                 if (online === 1) {
-                                    ajax_insert_obs(reportID, obsID, obsItem, obsObs, obsPriority);
+                                    ajax_insert_obs(result.report, obsID, obsItem, obsObs, obsPriority);
                                 }
                                 console.log('inserted obs:' + obsID);
                             }, errorCB);
@@ -857,14 +893,23 @@ function reportPage() {
                         });
 
                         if (online === 1) {
-                            ajax_insert_report(reportID, result.reportClient, result.reportWork, result.reportContract, reportDate, result.reportTime, ticked, window.localStorage.userID, result.clientPrevAvail, result.clientPrevAction);
+                            ajax_insert_report(result.report, result.reportClient, result.reportWork, result.reportContract, reportDate, result.reportTime, ticked, window.localStorage.userID, result.clientPrevAvail, result.clientPrevAction);
                         }
 
-                        console.log("inserted report:" + reportID);
-                        $(".sigReportID").val(reportID);
-                        $('.signature1').modal('show');
+                        console.log("inserted report:" + result.report);
+                        
                     }, errorCB);
                 }, errorCB
+            );
+            var title = $('a.dashboard').attr('title');
+            $("#main").load('dashboard.html', function () {
+                $('.navbar-fixed-top .navbar-brand').html(title);
+            });
+            navigator.notification.alert(
+                'Your report was successfully added.',
+                function () {},
+                'Report Added',
+                'OK'
             );
             $('.subreport').removeAttr('disabled');
 

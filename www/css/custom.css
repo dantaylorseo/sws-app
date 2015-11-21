@@ -7,7 +7,7 @@
     top: 0;
     left: 0;
     padding-top: 100px;
-    padding-bottom: 100px;
+    padding-bottom: 0px;
     -webkit-overflow-scrolling: touch;
 	background: -moz-linear-gradient(top,  rgba(232,232,232,0.65) 0%, rgba(0,0,0,0) 100%); /* FF3.6+ */
 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(232,232,232,0.65)), color-stop(100%,rgba(0,0,0,0))); /* Chrome,Safari4+ */
@@ -127,7 +127,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6e8e8e8', e
     text-transform: uppercase;
     float: none;
 }
-.topbarhome, .topbarhome:active, .topbarhome.active, .topbarhome:focus {
+.topbarhome, .topbarhome:active, .topbarhome.active, .topbarhome:focus, .topbarhome:hover {
     font-size: 26px;
     color: #fff;
     margin-right: 30px;
