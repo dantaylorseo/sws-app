@@ -29,7 +29,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6e8e8e8', e
 }
 .footer {
     position: fixed;
-    top: 65px;
+    top: 50px;
     right: 0;
     width: 180px;
     /* Set the fixed height of the footer here */
@@ -131,6 +131,11 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6e8e8e8', e
     font-size: 26px;
     color: #fff;
     margin-right: 30px;
+}
+.topbarback, .topbarback:active, .topbarback.active, .topbarback:focus, .topbarback:hover {
+    font-size: 20px;
+    color: #fff;
+    margin-right: 0px;
 }
 .navbar-default .navbar-brand {
     color: #fff;

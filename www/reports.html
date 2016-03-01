@@ -1,33 +1,36 @@
 <div id="ajaxdata">
-    <div class="btn-group">
-  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-    Filter <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu dropdown-menu-form">
-      <form>
-  <li role="presentation" class="dropdown-header"><h4>Filter Reports</h4></li>
-          <li role="presentation" class="divider"></li>
-          <li role="presentation" class="dropdown-header"><strong>Start Date</strong></li>
-      <li class="input">
-    <input type="text" class="form-control datepicker" name="start" placeholder="Start Date" />
-      </li>
-      <li role="presentation" class="dropdown-header"><strong>End Date</strong></li>
-      
-      <li class="input">
-    <input type="text" class="form-control datepicker" name="end" placeholder="End Date" />
-</li>
-      <li role="presentation" class="divider"></li>
-          <li role="presentation" class="dropdown-header"><strong>Client</strong></li>
-      
-      <li class="input">
-    <select class="form-control"><option>All Clients</option></select>
-</li>
-      <li role="presentation" class="divider"></li>
-          
-      <li class="input"><button type="submit" class="btn btn-primary addsig">Filter</button></li>
-          </form>
-</ul>
-</div>
+    <form id="filterForm">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <div class="input-group date">
+                        <input type="text" name="start" id="filter_start_date" class="form-control"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>End Date</label>
+                    <div class="input-group date">
+                        <input type="text" name="end" id="filter_end_date" class="form-control"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Client</label>
+                    <select id="clientID" name="clientID" class="form-control"><option>All Clients</option></select>
+                </div>
+            </div>        
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button type="button" id="submitFilter" class="btn btn-success btn-block">Filter Reports</button>
+                </div>
+            </div>
+        </div>
+    </form>
     <div class="list-group" id="reportList">
         <a class="list-group-item" href="#"><h4>No reports to show</h4></a>
     </div>
